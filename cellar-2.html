@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cellar Keeper Helper — Cellar 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=EB+Garamond:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F5EFE2;
+  --bg-panel: #FBF6EB;
+  --bg-deep: #2A1B17;
+  --fg: #1F1815;
+  --fg-muted: #6E5A4A;
+  --accent: #7B2D26;
+  --accent-warm: #C9A961;
+  --accent-cool: #4D6B5F;
+  --border: #C9B89A;
+  --shadow: 0 1px 3px rgba(60,30,15,.08), 0 4px 12px rgba(60,30,15,.06);
+  --serif: 'EB Garamond', Georgia, serif;
+  --serif-head: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'Inter', -apple-system, sans-serif;
+}
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #111816;
+  --bg-panel: #1b2420;
+  --bg-deep: #0b100e;
+  --fg: #e8eee8;
+  --fg-muted: #a9b5aa;
+  --accent: #db8773;
+  --accent-warm: #dfbd72;
+  --accent-cool: #78a68e;
+  --border: #3b4c42;
+  --shadow: 0 2px 6px rgba(0,0,0,.24), 0 10px 24px rgba(0,0,0,.18);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  color: var(--fg);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(rgba(123,45,38,.04) 1px, transparent 1px),
+    radial-gradient(rgba(201,169,97,.03) 1px, transparent 1px);
+  background-size: 24px 24px, 36px 36px;
+  background-position: 0 0, 12px 12px;
+  font: 17px/1.55 var(--serif);
+}
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 24px;
+  color: var(--bg);
+  background: var(--bg-deep);
+  border-bottom: 3px solid var(--accent);
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent-warm);
+  font: 700 22px var(--serif-head);
+  letter-spacing: .5px;
+  white-space: nowrap;
+}
+.subtitle { color: rgba(245,239,226,.6); font-style: italic; font-size: 14px; }
+.spacer { flex: 1; }
+.cellar-link {
+  padding-left: 14px;
+  color: var(--accent-warm);
+  border-left: 1px solid rgba(201,169,97,.3);
+  font: 600 11px var(--sans);
+  letter-spacing: 1.2px;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.cellar-link[aria-current="page"] { color: rgba(245,239,226,.55); }
+.theme-toggle {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  color: var(--accent-warm);
+  background: transparent;
+  border: 1px solid rgba(201,169,97,.55);
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: pointer;
+}
+.theme-toggle:hover { background: rgba(201,169,97,.15); }
+.theme-toggle:focus-visible, a:focus-visible { outline: 2px solid var(--accent-warm); outline-offset: 3px; }
+.container {
+  width: 100%;
+  flex: 1;
+  padding: 4px 24px 4px;
+}
+.cellar-layout {
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr;
+  gap: 24px;
+  margin-top: 4px;
+}
+.varietal-column { display: flex; flex-direction: column; gap: 6px; }
+.varietal-group, .construction-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+.varietal-group { min-height: 132px; padding: 12px; }
+.varietal-group h2 {
+  margin: 0;
+  font: 600 18px var(--serif-head);
+}
+.construction-card {
+  min-height: 100%;
+  display: grid;
+  place-content: center;
+  padding: 40px 24px;
+  text-align: center;
+}
+.construction-icon { font-size: 42px; }
+.construction-card h1 {
+  margin: 8px 0 4px;
+  color: var(--accent);
+  font: 600 32px var(--serif-head);
+}
+.construction-card p { margin: 0; color: var(--fg-muted); }
+.footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 24px;
+  color: var(--fg-muted);
+  background: var(--bg-deep);
+  border-top: 1px solid rgba(201,169,97,.2);
+  margin-top: 4px;
+  font: 11px var(--sans);
+}
+.footer a { color: var(--accent-warm); text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
+@media (max-width: 768px) {
+  .header { gap: 10px; padding: 10px 14px; }
+  .subtitle { display: none; }
+  .cellar-link { padding-left: 8px; font-size: 10px; }
+  .container { padding: 16px; }
+  .cellar-layout { grid-template-columns: minmax(0, 1fr); }
+  .construction-card { min-height: 260px; }
+  .footer { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="logo">🍷 Cellar Keeper Helper</div>
+  <span class="subtitle">— unofficial companion</span>
+  <div class="spacer"></div>
+  <a class="cellar-link" href="index.html">Cellar 1</a>
+  <a class="cellar-link" href="cellar-2.html" aria-current="page">Cellar 2</a>
+  <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark theme" title="Switch to dark theme">🌙</button>
+</header>
+<main class="container">
+  <div class="cellar-layout">
+    <aside class="varietal-column" aria-label="Cellar 2 left side">
+      <section class="varietal-group"><h2>Floor 1</h2></section>
+      <section class="varietal-group"><h2>Floor 2</h2></section>
+    </aside>
+    <section class="construction-card" aria-labelledby="construction-title">
+      <div>
+        <div class="construction-icon" aria-hidden="true">🛠️</div>
+        <h1 id="construction-title">Under construction</h1>
+        <p>Cellar 2 details will be added when they are available.</p>
+      </div>
+    </section>
+    <aside class="varietal-column" aria-label="Cellar 2 right side">
+      <section class="varietal-group"><h2>Floor 1</h2></section>
+      <section class="varietal-group"><h2>Floor 2</h2></section>
+    </aside>
+  </div>
+</main>
+<footer class="footer">
+  <span>Static · offline · unofficial fan project</span>
+  <a href="index.html">← Back to Cellar 1</a>
+</footer>
+<script type="module">
+import { initializeThemeToggle } from './theme.js';
+initializeThemeToggle();
+</script>
+</body>
+</html>

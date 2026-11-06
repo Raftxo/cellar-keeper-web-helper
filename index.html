@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cellar Keeper Helper — Cellar 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=EB+Garamond:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:          #F5EFE2;
+  --bg-panel:    #FBF6EB;
+  --bg-deep:     #2A1B17;
+  --fg:          #1F1815;
+  --fg-muted:    #6E5A4A;
+  --accent:      #7B2D26;
+  --accent-warm: #C9A961;
+  --accent-cool: #4D6B5F;
+  --border:      #C9B89A;
+  --table-bg:    #FFF;
+  --table-border:#1F4E79;
+  --table-grid:  #B4C7E7;
+  --table-head:  #D9E1F2;
+  --table-head-border: #8EA9DB;
+  --table-fg:    #1F1815;
+  --table-note:  #FFF2CC;
+  --table-note-fg:#BF8F00;
+  --shadow:      0 1px 3px rgba(60,30,15,.08), 0 4px 12px rgba(60,30,15,.06);
+  --serif:       'EB Garamond', Georgia, serif;
+  --serif-head:  'Cormorant Garamond', Georgia, serif;
+  --sans:        'Inter', -apple-system, sans-serif;
+  --mono:        'SF Mono', Menlo, Consolas, monospace;
+}
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg:          #111816;
+  --bg-panel:    #1b2420;
+  --bg-deep:     #0b100e;
+  --fg:          #e8eee8;
+  --fg-muted:    #a9b5aa;
+  --accent:      #db8773;
+  --accent-warm: #dfbd72;
+  --accent-cool: #78a68e;
+  --border:      #3b4c42;
+  --table-bg:    #18211d;
+  --table-border:#668b77;
+  --table-grid:  #3a5045;
+  --table-head:  #263a30;
+  --table-head-border: #577565;
+  --table-fg:    #e8eee8;
+  --table-note:  #494126;
+  --table-note-fg:#e5c46e;
+  --shadow:      0 2px 6px rgba(0,0,0,.24), 0 10px 24px rgba(0,0,0,.18);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--serif);
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--fg);
+  background: var(--bg);
+  background-image:
+    radial-gradient(rgba(123,45,38,.04) 1px, transparent 1px),
+    radial-gradient(rgba(201,169,97,.03) 1px, transparent 1px);
+  background-size: 24px 24px, 36px 36px;
+  background-position: 0 0, 12px 12px;
+  min-height: 100vh;
+  transition: background-color .2s, color .2s;
+}
+
+/* === Header === */
+.header {
+  background: var(--bg-deep);
+  color: var(--bg);
+  padding: 12px 24px;
+  display: flex; align-items: center; gap: 16px;
+  border-bottom: 3px solid var(--accent);
+  position: sticky; top: 0; z-index: 100;
+}
+.header .logo {
+  font-family: var(--serif-head); font-weight: 700; font-size: 22px;
+  color: var(--accent-warm);
+  display: flex; align-items: center; gap: 8px;
+  letter-spacing: 0.5px;
+}
+.header .subtitle {
+  font-style: italic; color: rgba(245,239,226,.6);
+  font-size: 14px;
+}
+.header .spacer { flex: 1; }
+.header .cellar-link {
+  font-family: var(--sans); font-size: 11px; text-transform: uppercase;
+  letter-spacing: 1.2px; color: var(--accent-warm); text-decoration: none;
+  padding-left: 14px; border-left: 1px solid rgba(201,169,97,.3);
+  white-space: nowrap;
+}
+.header .cellar-link[aria-current="page"] {
+  color: rgba(245,239,226,.55);
+}
+.header .theme-toggle {
+  background: transparent; color: var(--accent-warm);
+  border: 1px solid rgba(201,169,97,.55); border-radius: 50%;
+  width: 36px; height: 36px; display: grid; place-items: center;
+  font-size: 18px; cursor: pointer;
+}
+.header .theme-toggle:hover {
+  background: rgba(201,169,97,.15);
+}
+.header .theme-toggle:focus-visible, .header a:focus-visible {
+  outline: 2px solid var(--accent-warm); outline-offset: 3px;
+}
+
+/* === Layout === */
+.container {
+  width: 100%;
+  max-width: none;
+  margin: 0 auto;
+  padding: 4px 24px 4px;
+}
+
+/* === Varietal picker === */
+.vchip {
+  font-family: var(--sans); font-size: 12px; font-weight: 500;
+  padding: 5px 11px; border-radius: 14px; cursor: pointer;
+  background: transparent; color: var(--fg);
+  border: 1px solid var(--border); transition: all .12s;
+  user-select: none; white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.vchip:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+.vchip.active { background: var(--accent); color: #FFF; border-color: var(--accent); }
+.vchip.type-white.active { background: var(--accent-warm); color: #1F1815; border-color: var(--accent-warm); }
+.vchip.type-sparkling.active { background: var(--accent-warm); color: #1F1815; border-color: var(--accent-warm); }
+.vchip.type-fruit.active, .vchip.type-mead.active { background: var(--accent-cool); color: #FFF; border-color: var(--accent-cool); }
+.vchip .dot {
+  width: 8px; height: 8px; border-radius: 50%; display: inline-block;
+  border: 1px solid rgba(0,0,0,.15);
+}
+.vchip.type-red .dot { background: var(--accent); }
+.vchip.type-white .dot { background: var(--accent-warm); }
+.vchip.type-sparkling .dot { background: #F2E7B6; }
+.vchip.type-fruit .dot { background: var(--accent-cool); }
+.vchip.type-mead .dot { background: #C9962E; }
+
+/* === Shelf detail === */
+.shelf-detail {
+  background: var(--bg-panel); border: 1px solid var(--border);
+  border-radius: 8px; box-shadow: var(--shadow); overflow: hidden;
+  margin-bottom: 32px;
+}
+.shelf-detail-header {
+  padding: 18px 24px; display: flex; align-items: baseline; gap: 16px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(201,169,97,.08), transparent);
+}
+.shelf-detail-header .varietal-name {
+  font-family: var(--serif-head); font-weight: 600; font-size: 30px;
+  color: var(--fg); flex: 1; line-height: 1.1;
+}
+.shelf-detail-header .meta {
+  font-family: var(--sans); font-size: 12px; color: var(--fg-muted);
+  display: flex; flex-direction: column; gap: 2px; text-align: right;
+}
+.shelf-detail-header .meta .pill {
+  background: var(--bg); padding: 3px 10px; border-radius: 10px;
+  text-transform: uppercase; letter-spacing: .5px; font-weight: 600;
+  font-size: 11px;
+}
+.shelf-stats {
+  padding: 10px 24px;
+  font-family: var(--sans); font-size: 13px; color: var(--fg-muted);
+  background: rgba(123,45,38,.03);
+  border-bottom: 1px solid var(--border);
+  display: flex; gap: 24px; flex-wrap: wrap;
+}
+.shelf-stats .stat strong { color: var(--accent); font-family: var(--mono); }
+
+/* === Shelf table (clean spreadsheet style, proportional column widths) === */
+.shelf-table-wrap {
+  padding: 24px 24px 8px;
+  overflow-x: auto;
+  display: flex;
+  justify-content: center;
+}
+.shelf-table {
+  display: inline-grid;
+  flex: 0 0 max-content;
+  background: var(--table-bg);
+  border: 2.5px solid var(--table-border);
+  /* grid-template-columns set inline per-shelf */
+  zoom: var(--shelf-table-scale, 1);
+}
+.shelf-table .cell {
+  border: 1px solid var(--table-grid);
+  padding: 4px 8px;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--table-fg);
+  text-align: left;
+  vertical-align: middle;
+  height: 26px;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-break: keep-all;
+  display: flex;
+  align-items: center;
+}
+/* Header cells (top row) — number centered above bottle icons */
+.shelf-table .cell.header {
+  background: var(--table-head);
+  font-weight: 600;
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 0.3px;
+  color: var(--table-fg);
+  justify-content: center;
+  border-bottom: 1.5px solid var(--table-head-border);
+  flex-direction: column;       /* stack number above bottles vertically */
+  padding: 4px 4px 6px;
+  height: auto;                  /* taller to fit number + bottles */
+  gap: 2px;
+}
+.shelf-table .cell.header .col-num-top {
+  color: var(--table-border);
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 1;
+}
+.shelf-table .cell.header .bottle-icons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1px;
+  line-height: 0;
+}
+/* Wine bottle SVG icon */
+.shelf-table .bottle-icon {
+  width: 11px;
+  height: 22px;
+  display: inline-block;
+  color: var(--accent);
+  vertical-align: middle;
+}
+/* Brand cells (body) — pure white, no striping, text centered */
+.shelf-table .cell.brand {
+  font-weight: 400;
+  background: var(--table-bg);
+  color: var(--table-fg);
+  justify-content: center;
+  text-align: center;
+}
+/* Highlight Novafizz cell (author's note about Glera/Glera) */
+.shelf-table .cell.brand.note {
+  background: var(--table-note);
+  font-style: italic;
+}
+.shelf-table .cell.brand.note::after {
+  content: " ★";
+  color: var(--table-note-fg);
+  font-size: 10px;
+}
+
+/* === Notes callout === */
+.note-callout {
+  margin: 8px 24px 16px;
+  padding: 10px 14px;
+  background: rgba(201,169,97,.12);
+  border-left: 3px solid var(--accent-warm);
+  border-radius: 0 4px 4px 0;
+  font-family: var(--serif); font-style: italic; font-size: 14px;
+  color: var(--fg-muted);
+}
+.note-callout strong { color: var(--fg); font-style: normal; }
+
+/* === Footer === */
+.footer {
+  background: var(--bg-deep); color: var(--fg-muted);
+  padding: 8px 24px; font-family: var(--sans); font-size: 11px;
+  display: flex; justify-content: space-between; align-items: center;
+  border-top: 1px solid rgba(201,169,97,.2);
+  margin-top: 4px;
+}
+.footer a { color: var(--accent-warm); text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
+
+/* === Mobile === */
+@media (max-width: 768px) {
+  .container { padding: 16px; }
+  .shelf-detail-header { flex-wrap: wrap; }
+  .shelf-detail-header .varietal-name { font-size: 22px; }
+  .header .subtitle { display: none; }
+  .header { gap: 10px; padding: 10px 14px; }
+  .header .cellar-link { padding-left: 8px; font-size: 10px; }
+}
+
+.cellar-layout {
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr;
+  gap: 24px;
+  margin-top: 4px;
+}
+
+.varietal-column {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.varietal-group {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: var(--shadow);
+}
+
+.varietal-group h2 {
+  font-family: var(--serif-head);
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.varietal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.varietal-list .vchip {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.12s, transform 0.12s;
+}
+
+.varietal-list .vchip:hover {
+  transform: translateY(-1px);
+}
+
+.varietal-list .vchip.active {
+  background: var(--accent);
+  color: #FFF;
+}
+
+.varietal-list .vchip.type-white.active {
+  background: var(--accent-warm);
+  color: #1F1815;
+}
+
+.varietal-list .vchip.type-sparkling.active {
+  background: var(--accent-warm);
+  color: #1F1815;
+}
+
+.varietal-list .vchip.type-fruit.active,
+.varietal-list .vchip.type-mead.active {
+  background: var(--accent-cool);
+  color: #FFF;
+}
+
+.varietal-list .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 1px solid rgba(0, 0, 0, .15);
+}
+
+.varietal-list.type-red .dot {
+  background: var(--accent);
+}
+
+.varietal-list.type-white .dot {
+  background: var(--accent-warm);
+}
+
+.varietal-list.type-sparkling .dot {
+  background: #F2E7B6;
+}
+
+.varietal-list.type-fruit .dot {
+  background: var(--accent-cool);
+}
+
+.varietal-list.type-mead .dot {
+  background: #C9962E;
+}
+
+@media (max-width: 768px) {
+  .cellar-layout { grid-template-columns: minmax(0, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <path d="M9 2h6v3l-1 1v3l3 3v9a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-9l3-3V6L9 5V2z"
+            fill="currentColor" opacity=".9"/>
+      <rect x="10" y="13" width="4" height="2" fill="rgba(0,0,0,.2)"/>
+    </svg>
+    Cellar Keeper Helper
+  </div>
+  <span class="subtitle">— unofficial companion</span>
+  <div class="spacer"></div>
+  <a class="cellar-link" href="index.html" aria-current="page">Cellar 1 · 2 448 bottles</a>
+  <a class="cellar-link" href="cellar-2.html">Cellar 2</a>
+  <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark theme" title="Switch to dark theme">🌙</button>
+</div>
+
+<div class="container">
+  <div class="cellar-layout">
+    <aside class="varietal-column" aria-label="Varietales del lado izquierdo">
+      <div class="varietal-group">
+        <h2>Floor 1</h2>
+        <div class="varietal-list" id="left-floor1"></div>
+      </div>
+      <div class="varietal-group">
+        <h2>Floor 2</h2>
+        <div class="varietal-list" id="left-floor2"></div>
+      </div>
+    </aside>
+
+    <main id="shelf-detail"></main>
+
+    <aside class="varietal-column" aria-label="Varietales del lado derecho">
+      <div class="varietal-group">
+        <h2>Floor 1</h2>
+        <div class="varietal-list" id="right-floor1"></div>
+      </div>
+      <div class="varietal-group">
+        <h2>Floor 2</h2>
+        <div class="varietal-list" id="right-floor2"></div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<div class="footer">
+  <span>Static · offline · unofficial fan project · typos corrected vs. original guide</span>
+  <span>Data source: <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3779159708" target="_blank" rel="noopener">SteffRenn's Steam guide</a></span>
+</div>
+
+<script type="module">import { CELLAR_DATA } from './cellar-keeper-data.js';
+import { initializeThemeToggle } from './theme.js';
+
+initializeThemeToggle();
+
+// Derive VARIETAL_META, LAYOUT, and BRANDS from the canonical CELLAR_DATA
+// (single source of truth in cellar-keeper-data.js)
+const VARIETAL_META = {};
+const LAYOUT = {};
+const BRANDS = {};
+for (const v of CELLAR_DATA.varietals) {
+  VARIETAL_META[v.varietal] = {
+    type: v.type,
+    origin: v.origin,
+    color: v.color_tag,
+  };
+  LAYOUT[v.varietal] = { pisos: v.pisos, columns: v.columns_spec };
+  // Group brands by bottles_per_brand
+  const byCount = {};
+  for (const col of v.columns) {
+    const n = col.bottles_per_brand;
+    if (!byCount[n]) byCount[n] = [];
+    byCount[n].push(...col.brands);
+  }
+  // Dedupe + sort alphabetically within each count
+  for (const n in byCount) {
+    const seen = new Set();
+    byCount[n] = byCount[n].filter(b => {
+      const key = b.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+  }
+  BRANDS[v.varietal] = byCount;
+}
+
+// === Build varietal chips ===
+const LEFT_FLOOR1 = [
+  "Malbec", "Pinotage", "Carménère", "Chardonnay",
+  "Cabernet Sauvignon", "Pinot Meunier", "Touriga Nacional",
+  "Öküzgözü", "Palomino"
+];
+const LEFT_FLOOR2 = [
+  "Muscat", "Sauvignon Blanc", "Chenin Blanc",
+  "Strawberry", "Blackberry", "Mead"
+];
+const RIGHT_FLOOR1 = [
+  "Sémillon", "Merlot", "Riesling", "Shiraz", "Glera",
+  "Sangiovese", "Primitivo", "Pinot Grigio", "Tempranillo"
+];
+const RIGHT_FLOOR2 = [
+  "Pinot Noir", "Boğazkere", "Grenache",
+  "Blueberry", "Cherry", "Pomegranate"
+];
+
+function addChips(names, containerId) {
+  const container = document.getElementById(containerId);
+
+  names.forEach(name => {
+    const meta = VARIETAL_META[name];
+    const chip = document.createElement('span');
+
+    chip.className = `vchip type-${meta.type}`;
+    chip.dataset.varietal = name;
+    chip.innerHTML = `<span class="dot"></span>${name}`;
+    chip.title = meta.origin;
+    chip.addEventListener('click', () => selectVarietal(name));
+
+    container.appendChild(chip);
+  });
+}
+
+function buildChips() {
+  addChips(LEFT_FLOOR1, 'left-floor1');
+  addChips(LEFT_FLOOR2, 'left-floor2');
+  addChips(RIGHT_FLOOR1, 'right-floor1');
+  addChips(RIGHT_FLOOR2, 'right-floor2');
+}
+
+// === Render shelf detail ===
+function selectVarietal(name) {
+  // Update active chip
+  document.querySelectorAll('.vchip').forEach(c => c.classList.remove('active'));
+  document.querySelector(`.vchip[data-varietal="${name}"]`)?.classList.add('active');
+
+  const meta = VARIETAL_META[name];
+  const layout = LAYOUT[name];
+  const brandData = BRANDS[name];
+
+  // Distribute brands into columns following the layout spec
+  // For each column in `layout.columns`, take `pisos` brands of the matching bottle count
+  const byCount = {};
+  for (const [countStr, brands] of Object.entries(brandData)) {
+    byCount[countStr] = [...brands]; // copy
+  }
+  const columns = [];
+  const consumed = {};
+  for (const bottleCount of layout.columns) {
+    const key = String(bottleCount);
+    const start = consumed[key] || 0;
+    const end = start + layout.pisos;
+    const colBrands = (byCount[key] || []).slice(start, end);
+    consumed[key] = end;
+    columns.push({ bottles_per_brand: bottleCount, brands: colBrands });
+  }
+
+  // Compute totals
+  const totalBottles = columns.reduce((sum, c) => sum + c.bottles_per_brand * c.brands.length, 0);
+  const totalBrands = columns.reduce((sum, c) => sum + c.brands.length, 0);
+
+  // Has Novafizz note?
+  const hasNovafizz = name === "Glera";
+  const noteHtml = hasNovafizz
+    ? `<div class="note-callout"><strong>★ Author's note:</strong> In-game this wine is labelled "Glera - Glera" but the bottle itself says "Novafizz". The guide (and this helper) use <em>Novafizz</em>.</div>`
+    : '';
+
+  // Build shelf table as a CSS grid.
+  // Each "cell" is a div positioned in the grid via grid-column / grid-row.
+  // No piso number column (removed per user request).
+  // Each cellar-shelf column has a fixed width in pixels — NOT strictly proportional
+  // to bottle count, since 9-bottle columns would be too wide. Instead:
+  //   - 3-bottle columns get 160px (wide enough for "Mediterranean Pearl")
+  //   - 5-bottle columns get 200px
+  //   - 6-bottle columns get 220px
+  //   - 9-bottle columns get 220px (capped — the bottle icons in the header convey the count)
+  const COL_WIDTH = { 3: 160, 5: 200, 6: 220, 9: 220 };
+
+  // Build grid-template-columns: one entry per cellar-shelf column (no piso column)
+  const gridCols = columns.map(c => `${COL_WIDTH[c.bottles_per_brand] || 200}px`).join(' ');
+
+  let tableHtml = `<div class="shelf-table" style="grid-template-columns: ${gridCols};">`;
+
+  // Helper to compute grid-column placement for a cellar-shelf column index
+  // (returns "start / end" track notation). No piso column now, so columns start at 1.
+  let cumulativeSlot = 1;
+  const colSpans = columns.map(c => {
+    const start = cumulativeSlot;
+    const end = cumulativeSlot + 1;  // each cellar-shelf column = 1 grid column
+    cumulativeSlot = end;
+    return { start, end };
+  });
+
+  // Inline SVG for the wine bottle (from upload/wine-bottle-svgrepo-com.svg, stripped)
+  const BOTTLE_SVG = '<svg class="bottle-icon" viewBox="0 0 380.722 380.721" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M206.836,94.524c0-17.132,0-94.524,0-94.524h-12.723h-7.534h-12.717c0,0,0,77.392,0,94.524s-32.207,37.929-32.207,62.346 c0,24.411,0,201.009,0,207.236c0,6.229,4.166,16.615,13.501,16.615c6.355,0,22.012,0,31.435,0c4.45,0,7.534,0,7.534,0 c9.423,0,25.073,0,31.429,0c9.342,0,13.513-10.387,13.513-16.615c0-6.228,0-182.826,0-207.236 C239.066,132.453,206.836,111.667,206.836,94.524z M180.979,122.281c-2.085,2.847-4.415,6.437-6.947,10.579 c-2.562,4.153-4.99,8.993-7.459,14.244c-0.941,2.684-1.906,5.496-2.713,8.313c-0.029,2.986-0.976,5.188-0.563,8.935 c0.25,6.948,0.523,14.256,0.801,21.82c0.5,15.133,0.593,31.284,0.721,47.422c-0.035,32.287-1.011,64.588-2.521,88.801 c-0.662,12.107-1.748,22.191-2.26,29.256c-0.627,7.064-1.15,11.107-1.15,11.107s-0.528-4.043-1.156-11.107 c-0.511-7.064-1.598-17.148-2.26-29.256c-1.51-24.213-2.487-56.514-2.521-88.801c0.116-16.139,0.209-32.289,0.72-47.422 c0.279-7.563,0.552-14.872,0.802-21.82c-0.122-3.224,1.092-7.604,1.784-11.09c1.342-3.282,2.829-6.327,4.247-9.196 c1.726-2.638,3.358-5.165,4.926-7.564c1.784-2.19,3.474-4.258,5.054-6.222c3.288-3.788,6.21-6.989,8.761-9.487 c5.042-5.042,8.278-7.517,8.278-7.517S184.999,116.5,180.979,122.281z"/></svg>';
+
+  // Header row: bottle icons row + number row, no "Piso" cell
+  columns.forEach((col, idx) => {
+    const span = colSpans[idx];
+    // Number centered above the bottles
+    const numLabel = `<div class="col-num-top">${col.bottles_per_brand}</div>`;
+    // N bottle icons in a row
+    const bottlesHtml = Array.from({length: col.bottles_per_brand}, () => BOTTLE_SVG).join('');
+    tableHtml += `<div class="cell header" style="grid-column: ${span.start} / ${span.end}; grid-row: 1;" title="Col ${idx + 1} · ${col.bottles_per_brand} bottles per brand">${numLabel}<div class="bottle-icons">${bottlesHtml}</div></div>`;
+  });
+
+  // Pre-compute display labels per column.
+  // Two abbreviation rules:
+  // 1. If 2+ brands in the same column share the same first word (e.g. "Mediterranean Pearl"
+  //    + "Mediterranean Sun"), abbreviate that word: "Med. Pearl" + "Med. Sun".
+  // 2. If 2+ brands in the same column share a common prefix of ≥4 chars but differ in
+  //    the first word (e.g. "Mediterranean Pearl" + "Meridian Sun" share "Me" but it's too
+  //    short; we apply this rule only when the shared prefix is ≥6 chars).
+  // The full brand name is preserved in the title attribute (tooltip).
+  const ABBREV_LEN = 3;
+  const MIN_SHARED_PREFIX_LEN = 4;   // trigger on 4+ shared chars (e.g. "Medi" in Mediterranean/Meridian)
+  const MIN_WORD_LEN_TO_ABBREV = 6;
+
+  function longestCommonPrefix(a, b) {
+    let i = 0;
+    while (i < a.length && i < b.length && a[i] === b[i]) i++;
+    return a.slice(0, i);
+  }
+
+  const displayLabels = columns.map(col => {
+    // Rule 1: group by exact first word
+    const byFirstWord = {};
+    col.brands.forEach(b => {
+      const firstWord = b.split(/\s+/)[0];
+      (byFirstWord[firstWord] ||= []).push(b);
+    });
+    // Build label per brand
+    return col.brands.map(b => {
+      const firstWord = b.split(/\s+/)[0];
+      // Rule 1: same first word, ≥2 occurrences, word long enough
+      const sameWord = byFirstWord[firstWord];
+      if (sameWord.length > 1 && firstWord.length >= MIN_WORD_LEN_TO_ABBREV) {
+        const rest = b.slice(firstWord.length).trim();
+        const abbr = firstWord.slice(0, ABBREV_LEN) + '.';
+        return rest ? `${abbr} ${rest}` : abbr;
+      }
+      // Rule 2: shared prefix (≥6 chars) with another brand in this column
+      const hasPrefixSibling = col.brands.some(other => {
+        if (other === b) return false;
+        const cp = longestCommonPrefix(b, other);
+        return cp.length >= MIN_SHARED_PREFIX_LEN;
+      });
+      if (hasPrefixSibling && firstWord.length >= MIN_WORD_LEN_TO_ABBREV) {
+        // Find the longest shared prefix among all siblings
+        // Abbreviate first word: keep first 3 chars + "."
+        const rest = b.slice(firstWord.length).trim();
+        const abbr = firstWord.slice(0, ABBREV_LEN) + '.';
+        return rest ? `${abbr} ${rest}` : abbr;
+      }
+      return b;
+    });
+  });
+
+  // Body rows: 5 pisos (no piso number column), one brand per cellar-shelf column
+  for (let piso = 0; piso < layout.pisos; piso++) {
+    const rowIdx = piso + 2; // row 1 is header, body starts at row 2
+    // One brand cell per cellar-shelf column, spanning N grid columns
+    columns.forEach((col, idx) => {
+      const brand = col.brands[piso] || '—';
+      const label = displayLabels[idx][piso] || brand;
+      const isNote = (name === "Glera" && brand === "Novafizz");
+      const noteClass = isNote ? " note" : "";
+      const span = colSpans[idx];
+      tableHtml += `<div class="cell brand${noteClass}" style="grid-column: ${span.start} / ${span.end}; grid-row: ${rowIdx};" title="Piso ${piso + 1} · ${brand} · ${col.bottles_per_brand} bottles">${label}</div>`;
+    });
+  }
+
+  tableHtml += '</div>';
+
+  // Render
+  const html = `
+    <div class="shelf-detail">
+      <div class="shelf-detail-header">
+        <span class="varietal-name">${name}</span>
+        <div class="meta">
+          <span class="pill" style="background: ${meta.color}; color: ${meta.type === 'white' || meta.type === 'sparkling' ? '#1F1815' : '#FFF'};">${meta.type}</span>
+          <span>${meta.origin}</span>
+        </div>
+      </div>
+      <div class="shelf-stats">
+        <span class="stat"><strong>${layout.pisos}</strong> pisos</span>
+        <span class="stat"><strong>${columns.length}</strong> columns · ${layout.columns.join(' / ')}</span>
+        <span class="stat"><strong>${totalBrands}</strong> brands</span>
+        <span class="stat"><strong>${totalBottles}</strong> bottles total</span>
+      </div>
+      ${noteHtml}
+      <div class="shelf-table-wrap">${tableHtml}</div>
+    </div>
+  `;
+  document.getElementById('shelf-detail').innerHTML = html;
+
+  // Update URL hash
+  history.replaceState(null, '', '#' + encodeURIComponent(name));
+
+  requestAnimationFrame(updateShelfTableScale);
+}
+
+// === Init ===
+function updateShelfTableScale() {
+  const wrap = document.querySelector('.shelf-table-wrap');
+  const table = wrap?.querySelector('.shelf-table');
+
+  if (!wrap || !table) return;
+
+  wrap.style.setProperty('--shelf-table-scale', '1');
+  const styles = getComputedStyle(wrap);
+  const availableWidth = wrap.clientWidth -
+    parseFloat(styles.paddingLeft) -
+    parseFloat(styles.paddingRight);
+  const tableWidth = table.getBoundingClientRect().width;
+
+  if (availableWidth > 0 && tableWidth > 0) {
+    wrap.style.setProperty('--shelf-table-scale', String(Math.min(1, availableWidth / tableWidth)));
+  }
+}
+
+buildChips();
+
+// Check URL hash for initial varietal
+const hash = decodeURIComponent(window.location.hash.slice(1));
+const initial = (hash && VARIETAL_META[hash]) ? hash : "Sémillon";
+selectVarietal(initial);
+
+window.addEventListener('resize', () => {
+  requestAnimationFrame(updateShelfTableScale);
+});
+</script>
+
+</body>
+</html>

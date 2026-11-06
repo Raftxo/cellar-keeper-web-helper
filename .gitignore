@@ -1,0 +1,30 @@
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.bat
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.*.un~
+
+# Logs
+*.log
+
+# Python (for the local dev server)
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node (not used, but just in case)
+node_modules/
+package-lock.json
+
+# Build artifacts (not used, but just in case)
+dist/
+build/
