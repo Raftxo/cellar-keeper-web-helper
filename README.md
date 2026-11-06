@@ -6,7 +6,7 @@
 
 A lightweight, **dependency-free** static site that shows you **where every bottle of the 2,448 in Cellar 1 belongs** — floor, column position, and brand. It does not show shelf numbers because the in-game shelves are not numbered. Cellar 2 has a placeholder page until its details are available.
 
-Based on the Steam guide [Cellar Keeper Cellar 1 Alphabetical Shelf-by-Shelf Guide](https://steamcommunity.com/sharedfiles/filedetails/?id=3779159708) by **SteffRenn**, with several typos and inconsistencies corrected (see [§ Corrections](#-corrections-vs-the-original-guide)).
+Based on the Cellar 1 information in [SteffRenn's Steam guide](https://steamcommunity.com/sharedfiles/filedetails/?id=3779159708). The guide is credited as the source; names and spellings are presented consistently here to make them easier to find.
 
 ---
 
@@ -70,43 +70,28 @@ Each varietal has its own column layout measured directly from the in-game shelf
 | Pomegranate | 2 | 5 | 6 / 9 / 6 |
 | Mead | 2 | 5 | 6 / 9 / 6 |
 
-The full list is in [`cellar-keeper-data.json`](./cellar-keeper-data.json) (canonical) / [`cellar-keeper-data.js`](./cellar-keeper-data.js) (ES module consumed by `index.html`).
+The full list is in [`cellar-keeper-data.json`](./cellar-keeper-data.json) (canonical) / [`cellar-keeper-data.js`](./cellar-keeper-data.js) (ES module consumed by [`index.html`](./index.html)).
 
 ---
 
-## 🔧 Corrections vs. the original guide
+## 📝 Names and spellings
 
-The original guide by SteffRenn already warns that "there are some wines in the game that I assume to have misspellings or misslabellings, so I have mostly corrected these". This helper applies additional corrections discovered by cross-referencing with public wine varietal databases:
+The guide is the reference for the bottle and varietal listings. To make names easier to find, this helper uses diacritics for some varietals and consistent display names for a few entries. These are presentation choices; the guide remains the source for the listings and the in-game shelf layouts.
 
-### Varietal names — diacritics restored
-
-| In guide | Corrected | Reason |
+| Name in the guide | Name shown here | Note |
 | --- | --- | --- |
-| `Semillon` | `Sémillon` | French — acute accent on first 'e' |
-| `Carmenere` | `Carménère` | French/Chilean — accents on both 'e' |
-| `Okuzgozu` | `Öküzgözü` | Turkish — diacritics on 'O' and 'u' |
-| `Bogazkere` | `Boğazkere` | Turkish — diacritic on 'g' |
+| `Semillon` | `Sémillon` | Diacritics included for lookup |
+| `Carmenere` | `Carménère` | Diacritics included for lookup |
+| `Okuzgozu` | `Öküzgözü` | Diacritics included for lookup |
+| `Bogazkere` | `Boğazkere` | Diacritics included for lookup |
+| `Pino Grigio` | `Pinot Grigio` | Uses the same varietal name throughout |
+| `Kestral Ridge` / `Kestrel` | `Kestrel Ridge` | Consistent display name |
+| `Mediterranean` | `Mediterranean Pearl` | Full display name |
+| `Verdant` | `Verdant Drop` | Full display name |
 
-### Section header typo
+### In-game naming note
 
-| In guide | Corrected |
-| --- | --- |
-| `Pino Grigio` (section header) | `Pinot Grigio` |
-
-### Brand typos / abbreviations normalised
-
-| As written | Corrected | Where |
-| --- | --- | --- |
-| `Kestral Ridge` | `Kestrel Ridge` | Öküzgözü section — 'a' instead of 'e' |
-| `Kestrel` | `Kestrel Ridge` | Blackberry section — abbreviated |
-| `Mediterranean` | `Mediterranean Pearl` | Blueberry & Strawberry sections — abbreviated |
-| `Verdant` | `Verdant Drop` | Mead section — abbreviated |
-
-### Author's note preserved
-
-> "There is a wine in this list that is labelled as 'Glera - Glera' in-game, however the label on the bottle itself says 'Novafizz'."
-
-The helper shows the brand as **Novafizz** (highlighted with a ★ and a tooltip explaining the discrepancy).
+The guide lists Glera; the helper displays **Novafizz** and adds a ★ note that the bottle label uses that name.
 
 ---
 
@@ -117,6 +102,7 @@ cellar-keeper-web-helper/
 ├── index.html                    # Cellar 1 app — imports data from cellar-keeper-data.js
 ├── cellar-2.html                 # Cellar 2 placeholder
 ├── theme.js                      # Shared light/dark theme toggle
+├── favicon.svg                   # Wine bottle site icon
 ├── cellar-keeper-data.js         # Canonical data as an ES module
 ├── cellar-keeper-data.json       # Same data as JSON, for reference/other tools
 ├── README.md                     # This file
@@ -132,7 +118,7 @@ No `node_modules/`, no `package.json`, no build step. The site is served as stat
 
 GitHub Pages publishes the `main` branch from the repository root. After pushing changes, the site updates automatically at:
 
-https://the-silent-pulse.com/cellar-keeper-web-helper/
+[**the-silent-pulse.com/cellar-keeper-web-helper**](https://the-silent-pulse.com/cellar-keeper-web-helper/)
 
 ---
 
@@ -164,10 +150,7 @@ La aplicación permite elegir un varietal y ver la disposición de las botellas 
 
 #### 🌐 En línea (recomendado, una vez desplegado)
 
-Abre la app directamente:
-
-```
-https://the-silent-pulse.com/cellar-keeper-web-helper/
+Abre la [**aplicación en línea**](https://the-silent-pulse.com/cellar-keeper-web-helper/).
 
 Sin registros ni instalación: funciona en el navegador.
 
@@ -190,22 +173,28 @@ Puedes marcar un varietal concreto: `index.html#Pomegranate` abre la app con *Po
 * Cada estantería tiene 4 o 5 pisos, y columnas de 3, 5, 6 o 9 botellas por marca
 * Las estanterías no están numeradas en el juego y no se muestran códigos
 
-### Correcciones vs. la guía original
+### Nombres y ortografía
 
-Se han corregido 22 erratas y inconsistencias respecto a la guía original de SteffRenn:
+La guía es la referencia para el listado de vinos y varietales. Para facilitar las búsquedas, aquí se añaden diacríticos en algunos nombres y se muestran de forma uniforme unos pocos nombres de marcas. Son criterios de presentación: la guía sigue siendo la fuente del listado y se mantiene intacta la disposición de las estanterías.
 
-- **4 nombres de varietal** sin diacríticos → `Sémillon`, `Carménère`, `Öküzgözü`, `Boğazkere`
-- **1 cabecera de sección** con letra ausente → `Pino Grigio` → `Pinot Grigio`
-- **4 marcas** mal escritas o abreviadas → normalizadas a la forma mayoritaria
-- **12 inconsistencias de separador** (guion corto en vez de en-dash, separador ausente, prefijo `- `)
+| En la guía | Nombre mostrado | Nota |
+| --- | --- | --- |
+| `Semillon` | `Sémillon` | Ortografía francesa habitual |
+| `Carmenere` | `Carménère` | Ortografía francesa/chilena habitual |
+| `Okuzgozu` | `Öküzgözü` | Ortografía turca habitual |
+| `Bogazkere` | `Boğazkere` | Ortografía turca habitual |
+| `Pino Grigio` | `Pinot Grigio` | Usa el nombre del varietal en toda la aplicación |
+| `Kestral Ridge` / `Kestrel` | `Kestrel Ridge` | Forma completa y consistente de la marca |
+| `Mediterranean` | `Mediterranean Pearl` | Forma completa de la marca |
+| `Verdant` | `Verdant Drop` | Forma completa de la marca |
 
-El informe completo está en los metadatos del archivo `cellar-keeper-data.json`.
+La guía incluye el varietal Glera; el asistente añade una nota informativa indicando que la botella del juego lleva la etiqueta **Novafizz**.
 
 ### Despliegue en GitHub Pages
 
 GitHub Pages publica automáticamente la rama `main` desde la raíz del repositorio. Al subir cambios, la web se actualiza en:
 
-https://raftxo.github.io/cellar-keeper-web-helper/
+[**the-silent-pulse.com/cellar-keeper-web-helper**](https://the-silent-pulse.com/cellar-keeper-web-helper/)
 
 ### Créditos
 
