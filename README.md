@@ -28,7 +28,7 @@ Based on the Steam guide [Cellar Keeper Cellar 1 Alphabetical Shelf-by-Shelf Gui
 
 ### 🌐 Try it online
 
-[**raftxo.github.io/cellar-keeper-web-helper**](https://raftxo.github.io/cellar-keeper-web-helper/)
+[**the-silent-pulse.com/cellar-keeper-web-helper**](https://the-silent-pulse.com/cellar-keeper-web-helper/)
 
 No sign-up, no install — runs directly in the browser.
 
@@ -132,7 +132,7 @@ No `node_modules/`, no `package.json`, no build step. The site is served as stat
 
 GitHub Pages publishes the `main` branch from the repository root. After pushing changes, the site updates automatically at:
 
-https://raftxo.github.io/cellar-keeper-web-helper/
+https://the-silent-pulse.com/cellar-keeper-web-helper/
 
 ---
 
@@ -167,7 +167,7 @@ La aplicación permite elegir un varietal y ver la disposición de las botellas 
 Abre la app directamente:
 
 ```
-https://raftxo.github.io/cellar-keeper-web-helper/
+https://the-silent-pulse.com/cellar-keeper-web-helper/
 
 Sin registros ni instalación: funciona en el navegador.
 
