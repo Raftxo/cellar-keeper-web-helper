@@ -4,9 +4,9 @@
 
 > Stop tabbing out of the game to cross-reference the Steam guide. Pick a varietal, see its bottle layout by floor, column, and row, and place every bottle in seconds.
 
-A lightweight, **dependency-free** static site that shows you **where every bottle of the 2,448 in Cellar 1 belongs** — floor, column position, and brand. It does not show shelf numbers because the in-game shelves are not numbered. Cellar 2 has a placeholder page until its details are available.
+A lightweight, **dependency-free** static site that shows you **where every bottle belongs** in both cellars — floor, column position, and brand. It does not show shelf numbers because the in-game shelves are not numbered.
 
-Based on the Cellar 1 information in [SteffRenn's Steam guide](https://steamcommunity.com/sharedfiles/filedetails/?id=3779159708). The guide is credited as the source; names and spellings are presented consistently here to make them easier to find.
+Based on the Cellar 1 information in [SteffRenn's Steam guide](https://steamcommunity.com/sharedfiles/filedetails/?id=3779159708) and the Cellar 2 information in [kaorukamiya1980's Steam guide](https://steamcommunity.com/sharedfiles/filedetails/?id=3821795288). The guides are credited as the source; names and spellings are presented consistently here to make them easier to find.
 
 ---
 
@@ -15,9 +15,10 @@ Based on the Cellar 1 information in [SteffRenn's Steam guide](https://steamcomm
 - 🍷 **Bottle SVG icons in column headers** — each header shows N wine bottle icons + a number, so you instantly see whether the column holds 3, 5, 6 or 9 bottles per brand.
 - 📋 **Excel-style table layout** — clean spreadsheet look with proportional column widths (3-bottle columns are wider to fit long brand names like *Mediterranean Pearl*; 9-bottle columns are capped because the icons already convey the size).
 - 🔤 **Brands alphabetised within each column** — and distributed across columns of the same bottle count in alphabetical order (e.g. the 8 three-bottle brands in *Pinot Meunier* split 4 + 4 across the two 3-bottle columns, alphabetically).
-- 🏢 **Varietals grouped by floor** — Floor 1 (18 varietals) / Floor 2 (12 varietals).
+- 🏢 **Varietals grouped by floor** — Cellar 1: 18 on Floor 1 + 12 on Floor 2; Cellar 2: 45 unique varietals across both floors.
 - 🌙 **Light/dark theme** — switch from the header; the preference is shared by both cellar pages and persisted in localStorage.
-- 🏗️ **Cellar 2 placeholder** — linked from Cellar 1 and includes a link back.
+- 🍷 **Cellar 2 shelf layouts** — full chip layout and shelf tables for all 45 Cellar 2 varietals.
+- 🧭 **Neighbouring shelf cards** — selecting a varietal also shows the shelf directly above/below it (or beside it at the edges), so you can place bottles without switching pages.
 - 🔗 **Bookmarkable URLs** — `index.html#Sémillon`, `index.html#Pinot%20Grigio`, `index.html#Pomegranate` load the varietal directly.
 - 📱 **Mobile-friendly** — collapses to a single column on small screens.
 - 💾 **100% offline** — `index.html` + `cellar-keeper-data.js`, no build step, no dependencies, no server.
@@ -48,15 +49,14 @@ You can bookmark a specific varietal: `index.html#Pomegranate` loads with *Pomeg
 
 ## 📚 The data
 
-| Metric | Value |
-| --- | --- |
-| Cellar | 1 (the only one covered by the source guide) |
-| Total bottles | **2,448** ✓ (matches the store page) |
-| Varietal sections | **30** (18 on Floor 1 + 12 on Floor 2) |
-| Unique brands | **43** |
-| Brand×varietal entries | **468** |
-| Pisos (rows) per shelf | 4 or 5 (varies per varietal) |
-| Bottles per column | 3, 5, 6 or 9 (varies per column) |
+| Metric | Cellar 1 | Cellar 2 |
+| --- | --- | --- |
+| Total bottles | **2,448** | **4,424** |
+| Varietal sections | **30** (18 Floor 1 + 12 Floor 2) | **45** |
+| Pisos (rows) per shelf | 4 or 5 | 4 or 5 |
+| Bottles per column | 3, 5, 6 or 9 | 3, 5, 6 or 9 |
+
+Cellar 1 also has **43 unique brands** across **468 brand×varietal entries**.
 
 ### Physical shelf layout
 
@@ -70,7 +70,7 @@ Each varietal has its own column layout measured directly from the in-game shelf
 | Pomegranate | 2 | 5 | 6 / 9 / 6 |
 | Mead | 2 | 5 | 6 / 9 / 6 |
 
-The full list is in [`cellar-keeper-data.json`](./cellar-keeper-data.json) (canonical) / [`cellar-keeper-data.js`](./cellar-keeper-data.js) (ES module consumed by [`index.html`](./index.html)).
+The full data lives in [`cellar-keeper-data.js`](./cellar-keeper-data.js) (Cellar 1) and [`cellar-keeper-data-2.js`](./cellar-keeper-data-2.js) (Cellar 2), both ES modules consumed by the pages.
 
 ---
 
@@ -99,12 +99,12 @@ The guide lists Glera; the helper displays **Novafizz** and adds a ★ note that
 
 ```
 cellar-keeper-web-helper/
-├── index.html                    # Cellar 1 app — imports data from cellar-keeper-data.js
-├── cellar-2.html                 # Cellar 2 placeholder
+├── index.html                    # Cellar 1 app — imports cellar-keeper-data.js
+├── cellar-2.html                 # Cellar 2 app — imports cellar-keeper-data-2.js
 ├── theme.js                      # Shared light/dark theme toggle
 ├── favicon.svg                   # Wine bottle site icon
-├── cellar-keeper-data.js         # Canonical data as an ES module
-├── cellar-keeper-data.json       # Same data as JSON, for reference/other tools
+├── cellar-keeper-data.js         # Cellar 1 canonical data as an ES module
+├── cellar-keeper-data-2.js       # Cellar 2 canonical data as an ES module
 ├── README.md                     # This file
 ├── LICENSE                       # MIT
 └── .gitignore
@@ -124,7 +124,7 @@ GitHub Pages publishes the `main` branch from the repository root. After pushing
 
 ## 🙏 Credits
 
-- **Data source** — [SteffRenn's *Cellar Keeper Cellar 1 Alphabetical Shelf-by-Shelf Guide*](https://steamcommunity.com/sharedfiles/filedetails/?id=3779159708) on Steam Community.
+- **Data sources** — [SteffRenn's *Cellar Keeper Cellar 1 Alphabetical Shelf-by-Shelf Guide*](https://steamcommunity.com/sharedfiles/filedetails/?id=3779159708) and [kaorukamiya1980's Cellar 2 guide](https://steamcommunity.com/sharedfiles/filedetails/?id=3821795288) on Steam Community.
 - **Physical shelf layout** — measured directly from the in-game shelves.
 - **Bottle SVG icon** — [wine-bottle by SVG Repo](https://www.svgrepo.com/svg/326735/wine-bottle) (free for commercial use).
 - **Project structure inspiration** — [Raftxo/arcane-library-web-helper](https://github.com/Raftxo/arcane-library-web-helper) (MIT) — a similar companion for *Librarian: Tidy Up the Arcane Library!*
@@ -133,7 +133,7 @@ GitHub Pages publishes the `main` branch from the repository root. After pushing
 
 ## ⚠️ Disclaimer
 
-Unofficial fan-made project. **Not affiliated with EgoTrampoline or Valve.** *Cellar Keeper* and all related assets belong to their respective owners. The Steam guide and all credit for the underlying data go to SteffRenn.
+Unofficial fan-made project. **Not affiliated with EgoTrampoline or Valve.** *Cellar Keeper* and all related assets belong to their respective owners. The Steam guides and all credit for the underlying data go to SteffRenn and kaorukamiya1980.
 
 ---
 
@@ -141,10 +141,11 @@ Unofficial fan-made project. **Not affiliated with EgoTrampoline or Valve.** *Ce
 
 **cellar-keeper-web-helper** — Asistente web no oficial para *Cellar Keeper* (EgoTrampoline).
 
-La aplicación permite elegir un varietal y ver la disposición de las botellas por planta, columna y piso. El juego no numera las estanterías, así que no se muestran códigos de estantería. Cellar 2 tiene una página provisional hasta que se conozcan sus datos.
+La aplicación permite elegir un varietal y ver la disposición de las botellas por planta, columna y piso. El juego no numera las estanterías, así que no se muestran códigos de estantería. Cellar 1 y Cellar 2 incluyen sus estanterías completas.
 
 - 🌙 **Tema claro/oscuro**, compartido entre ambas páginas y guardado en el navegador.
-- 🏗️ **Enlace a Cellar 2**, con enlace de vuelta a Cellar 1.
+- 🍷 **Cellar 2 completo**, con sus 45 varietales y enlace de vuelta a Cellar 1.
+- 🧭 **Estanterías vecinas**, que se muestran junto a la seleccionada para colocar botellas sin cambiar de página.
 
 ### Cómo usarlo
 
@@ -168,8 +169,8 @@ Puedes marcar un varietal concreto: `index.html#Pomegranate` abre la app con *Po
 
 ### Datos
 
-* **30 secciones** de varietales: 18 en planta 1 + 12 en planta 2
-* **2 448 botellas** en total (coincide con la store page del juego)
+* **Cellar 1**: 30 secciones de varietales (18 en planta 1 + 12 en planta 2) y **2 448 botellas** en total
+* **Cellar 2**: 45 varietales y **4 424 botellas** en total
 * Cada estantería tiene 4 o 5 pisos, y columnas de 3, 5, 6 o 9 botellas por marca
 * Las estanterías no están numeradas en el juego y no se muestran códigos
 
@@ -198,11 +199,11 @@ GitHub Pages publica automáticamente la rama `main` desde la raíz del reposito
 
 ### Créditos
 
-* **Fuente de datos** — [Guía de Steam de SteffRenn](https://steamcommunity.com/sharedfiles/filedetails/?id=3779159708) (Cellar 1).
+* **Fuentes de datos** — [Guía de Steam de SteffRenn](https://steamcommunity.com/sharedfiles/filedetails/?id=3779159708) (Cellar 1) y [guía de kaorukamiya1980](https://steamcommunity.com/sharedfiles/filedetails/?id=3821795288) (Cellar 2).
 * **Disposición física de estanterías** — medidas directamente del juego.
 * **Icono SVG de botella** — [SVG Repo](https://www.svgrepo.com/svg/326735/wine-bottle) (uso comercial libre).
 * **Estructura del proyecto** — inspirada en [Raftxo/arcane-library-web-helper](https://github.com/Raftxo/arcane-library-web-helper) (MIT).
 
 ### Aviso
 
-Proyecto de fans no oficial. **Sin afiliación con EgoTrampoline ni con Valve.** *Cellar Keeper* y todos sus recursos pertenecen a sus respectivos dueños. La guía original y todo el mérito de los datos subyacentes son de SteffRenn.
+Proyecto de fans no oficial. **Sin afiliación con EgoTrampoline ni con Valve.** *Cellar Keeper* y todos sus recursos pertenecen a sus respectivos dueños. Las guías originales y todo el mérito de los datos subyacentes son de SteffRenn y kaorukamiya1980.

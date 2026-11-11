@@ -68,6 +68,8 @@ body {
   background-size: 24px 24px, 36px 36px;
   background-position: 0 0, 12px 12px;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   transition: background-color .2s, color .2s;
 }
 
@@ -93,12 +95,12 @@ body {
 .header .spacer { flex: 1; }
 .header .cellar-link {
   font-family: var(--sans); font-size: 11px; text-transform: uppercase;
-  letter-spacing: 1.2px; color: var(--accent-warm); text-decoration: none;
+  letter-spacing: 1.2px; color: rgba(245,239,226,.55); text-decoration: none;
   padding-left: 14px; border-left: 1px solid rgba(201,169,97,.3);
   white-space: nowrap;
 }
 .header .cellar-link[aria-current="page"] {
-  color: rgba(245,239,226,.55);
+  color: var(--accent-warm);
 }
 .header .theme-toggle {
   background: transparent; color: var(--accent-warm);
@@ -117,6 +119,7 @@ body {
 .container {
   width: 100%;
   max-width: none;
+  flex: 1;
   margin: 0 auto;
   padding: 4px 24px 4px;
 }
@@ -146,41 +149,42 @@ body {
 .vchip.type-mead .dot { background: #C9962E; }
 
 /* === Shelf detail === */
+.shelf-stack {
+  display: flex; flex-direction: column; gap: 12px;
+}
+.shelf-stack .shelf-detail { margin-bottom: 0; }
 .shelf-detail {
   background: var(--bg-panel); border: 1px solid var(--border);
   border-radius: 8px; box-shadow: var(--shadow); overflow: hidden;
   margin-bottom: 32px;
 }
 .shelf-detail-header {
-  padding: 18px 24px; display: flex; align-items: baseline; gap: 16px;
+  padding: 8px 16px; display: flex; align-items: baseline; flex-wrap: wrap;
+  gap: 4px 14px;
   border-bottom: 1px solid var(--border);
   background: linear-gradient(180deg, rgba(201,169,97,.08), transparent);
 }
 .shelf-detail-header .varietal-name {
-  font-family: var(--serif-head); font-weight: 600; font-size: 30px;
-  color: var(--fg); flex: 1; line-height: 1.1;
+  font-family: var(--serif-head); font-weight: 600; font-size: 24px;
+  color: var(--fg); line-height: 1.1;
 }
-.shelf-detail-header .meta {
-  font-family: var(--sans); font-size: 12px; color: var(--fg-muted);
-  display: flex; flex-direction: column; gap: 2px; text-align: right;
-}
-.shelf-detail-header .meta .pill {
+.shelf-detail-header .pill {
   background: var(--bg); padding: 3px 10px; border-radius: 10px;
   text-transform: uppercase; letter-spacing: .5px; font-weight: 600;
   font-size: 11px;
 }
-.shelf-stats {
-  padding: 10px 24px;
-  font-family: var(--sans); font-size: 13px; color: var(--fg-muted);
-  background: rgba(123,45,38,.03);
-  border-bottom: 1px solid var(--border);
-  display: flex; gap: 24px; flex-wrap: wrap;
+.shelf-detail-header .header-stats {
+  display: flex; flex-wrap: wrap; gap: 4px 12px;
+  font-family: var(--sans); font-size: 12px; color: var(--fg-muted);
 }
-.shelf-stats .stat strong { color: var(--accent); font-family: var(--mono); }
+.shelf-detail-header .header-stats .stat strong { color: var(--accent); font-family: var(--mono); }
+.shelf-detail-header .origin {
+  margin-left: auto; font-family: var(--sans); font-size: 12px; color: var(--fg-muted);
+}
 
 /* === Shelf table (clean spreadsheet style, proportional column widths) === */
 .shelf-table-wrap {
-  padding: 24px 24px 8px;
+  padding: 12px 24px;
   overflow-x: auto;
   display: flex;
   justify-content: center;
@@ -416,7 +420,7 @@ body {
   <span class="subtitle">— unofficial companion</span>
   <div class="spacer"></div>
   <a class="cellar-link" href="index.html" aria-current="page">Cellar 1 · 2 448 bottles</a>
-  <a class="cellar-link" href="cellar-2.html">Cellar 2</a>
+  <a class="cellar-link" href="cellar-2.html">Cellar 2 · 4 424 bottles</a>
   <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark theme" title="Switch to dark theme">🌙</button>
 </div>
 
@@ -448,10 +452,10 @@ body {
   </div>
 </div>
 
-<div class="footer">
+<footer class="footer">
   <span>Static · offline · unofficial fan project · names standardised for easy lookup</span>
   <span>Data source: <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3779159708" target="_blank" rel="noopener">SteffRenn's Steam guide</a></span>
-</div>
+</footer>
 
 <script type="module">import { CELLAR_DATA } from './cellar-keeper-data.js';
 import { initializeThemeToggle } from './theme.js';
@@ -509,6 +513,52 @@ const RIGHT_FLOOR2 = [
   "Blueberry", "Cherry", "Pomegranate"
 ];
 
+// Physical neighbours, confirmed with the user:
+//   - the shelf directly above and directly below in the same column;
+//   - if a shelf sits on the top/bottom edge (no shelf above or below), fall back to
+//     the shelf beside it in the same row;
+//   - plus the single cross-side touch (Malbec ↔ Sémillon).
+// Order in each list = the order the cards are shown (above/left first, then below/right).
+const NEIGHBOURS = {
+  // Left column · Floor 1
+  "Malbec": ["Sémillon", "Pinotage"],
+  "Pinotage": ["Malbec", "Carménère"],
+  "Carménère": ["Pinotage", "Chardonnay"],
+  "Chardonnay": ["Carménère", "Cabernet Sauvignon"],
+  "Cabernet Sauvignon": ["Chardonnay", "Pinot Meunier"],
+  "Pinot Meunier": ["Cabernet Sauvignon", "Touriga Nacional"],
+  "Touriga Nacional": ["Pinot Meunier", "Öküzgözü"],
+  "Öküzgözü": ["Touriga Nacional", "Palomino"],
+  "Palomino": ["Öküzgözü"],
+
+  // Left column · Floor 2
+  "Muscat": ["Sauvignon Blanc"],
+  "Sauvignon Blanc": ["Muscat", "Chenin Blanc"],
+  "Chenin Blanc": ["Sauvignon Blanc", "Strawberry"],
+  "Strawberry": ["Chenin Blanc", "Blackberry"],
+  "Blackberry": ["Strawberry", "Mead"],
+  "Mead": ["Blackberry"],
+
+  // Right column · Floor 1
+  "Sémillon": ["Malbec", "Merlot"],
+  "Merlot": ["Sémillon", "Riesling"],
+  "Riesling": ["Merlot", "Shiraz"],
+  "Shiraz": ["Riesling", "Glera"],
+  "Glera": ["Shiraz", "Sangiovese"],
+  "Sangiovese": ["Glera", "Primitivo"],
+  "Primitivo": ["Sangiovese", "Pinot Grigio"],
+  "Pinot Grigio": ["Primitivo", "Tempranillo"],
+  "Tempranillo": ["Pinot Grigio"],
+
+  // Right column · Floor 2
+  "Pinot Noir": ["Boğazkere"],
+  "Boğazkere": ["Pinot Noir", "Grenache"],
+  "Grenache": ["Boğazkere", "Blueberry"],
+  "Blueberry": ["Grenache", "Cherry"],
+  "Cherry": ["Blueberry", "Pomegranate"],
+  "Pomegranate": ["Cherry"]
+};
+
 function addChips(names, containerId) {
   const container = document.getElementById(containerId);
 
@@ -534,11 +584,7 @@ function buildChips() {
 }
 
 // === Render shelf detail ===
-function selectVarietal(name) {
-  // Update active chip
-  document.querySelectorAll('.vchip').forEach(c => c.classList.remove('active'));
-  document.querySelector(`.vchip[data-varietal="${name}"]`)?.classList.add('active');
-
+function shelfCardHtml(name) {
   const meta = VARIETAL_META[name];
   const layout = LAYOUT[name];
   const brandData = BRANDS[name];
@@ -678,26 +724,37 @@ function selectVarietal(name) {
   tableHtml += '</div>';
 
   // Render
-  const html = `
+  return `
     <div class="shelf-detail">
       <div class="shelf-detail-header">
         <span class="varietal-name">${name}</span>
-        <div class="meta">
-          <span class="pill" style="background: ${meta.color}; color: ${meta.type === 'white' || meta.type === 'sparkling' ? '#1F1815' : '#FFF'};">${meta.type}</span>
-          <span>${meta.origin}</span>
-        </div>
-      </div>
-      <div class="shelf-stats">
-        <span class="stat"><strong>${layout.pisos}</strong> pisos</span>
-        <span class="stat"><strong>${columns.length}</strong> columns · ${layout.columns.join(' / ')}</span>
-        <span class="stat"><strong>${totalBrands}</strong> brands</span>
-        <span class="stat"><strong>${totalBottles}</strong> bottles total</span>
+        <span class="pill" style="background: ${meta.color}; color: ${meta.type === 'white' || meta.type === 'sparkling' ? '#1F1815' : '#FFF'};">${meta.type}</span>
+        <span class="header-stats">
+          <span class="stat"><strong>${layout.pisos}</strong> pisos</span>
+          <span class="stat"><strong>${columns.length}</strong> cols · ${layout.columns.join(' / ')}</span>
+          <span class="stat"><strong>${totalBrands}</strong> brands</span>
+          <span class="stat"><strong>${totalBottles}</strong> bottles</span>
+        </span>
+        <span class="origin">${meta.origin}</span>
       </div>
       ${noteHtml}
       <div class="shelf-table-wrap">${tableHtml}</div>
     </div>
   `;
-  document.getElementById('shelf-detail').innerHTML = html;
+}
+
+function selectVarietal(name) {
+  // Update active chip
+  document.querySelectorAll('.vchip').forEach(c => c.classList.remove('active'));
+  document.querySelector(`.vchip[data-varietal="${name}"]`)?.classList.add('active');
+
+  const cards = [shelfCardHtml(name)];
+  for (const neighbour of (NEIGHBOURS[name] || [])) {
+    if (LAYOUT[neighbour]) cards.push(shelfCardHtml(neighbour));
+  }
+
+  document.getElementById('shelf-detail').innerHTML =
+    `<div class="shelf-stack">${cards.join('')}</div>`;
 
   // Update URL hash
   history.replaceState(null, '', '#' + encodeURIComponent(name));
@@ -707,21 +764,21 @@ function selectVarietal(name) {
 
 // === Init ===
 function updateShelfTableScale() {
-  const wrap = document.querySelector('.shelf-table-wrap');
-  const table = wrap?.querySelector('.shelf-table');
+  document.querySelectorAll('.shelf-table-wrap').forEach(wrap => {
+    const table = wrap.querySelector('.shelf-table');
+    if (!table) return;
 
-  if (!wrap || !table) return;
+    wrap.style.setProperty('--shelf-table-scale', '1');
+    const styles = getComputedStyle(wrap);
+    const availableWidth = wrap.clientWidth -
+      parseFloat(styles.paddingLeft) -
+      parseFloat(styles.paddingRight);
+    const tableWidth = table.getBoundingClientRect().width;
 
-  wrap.style.setProperty('--shelf-table-scale', '1');
-  const styles = getComputedStyle(wrap);
-  const availableWidth = wrap.clientWidth -
-    parseFloat(styles.paddingLeft) -
-    parseFloat(styles.paddingRight);
-  const tableWidth = table.getBoundingClientRect().width;
-
-  if (availableWidth > 0 && tableWidth > 0) {
-    wrap.style.setProperty('--shelf-table-scale', String(Math.min(1, availableWidth / tableWidth)));
-  }
+    if (availableWidth > 0 && tableWidth > 0) {
+      wrap.style.setProperty('--shelf-table-scale', String(Math.min(1, availableWidth / tableWidth)));
+    }
+  });
 }
 
 buildChips();

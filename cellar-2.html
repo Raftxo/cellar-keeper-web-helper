@@ -19,10 +19,19 @@
   --accent-warm: #C9A961;
   --accent-cool: #4D6B5F;
   --border: #C9B89A;
+  --table-bg: #FFF;
+  --table-border: #1F4E79;
+  --table-grid: #B4C7E7;
+  --table-head: #D9E1F2;
+  --table-head-border: #8EA9DB;
+  --table-fg: #1F1815;
+  --table-note: #FFF2CC;
+  --table-note-fg: #BF8F00;
   --shadow: 0 1px 3px rgba(60,30,15,.08), 0 4px 12px rgba(60,30,15,.06);
   --serif: 'EB Garamond', Georgia, serif;
   --serif-head: 'Cormorant Garamond', Georgia, serif;
   --sans: 'Inter', -apple-system, sans-serif;
+  --mono: 'SF Mono', Menlo, Consolas, monospace;
 }
 [data-theme="dark"] {
   color-scheme: dark;
@@ -35,6 +44,14 @@
   --accent-warm: #dfbd72;
   --accent-cool: #78a68e;
   --border: #3b4c42;
+  --table-bg: #18211d;
+  --table-border: #668b77;
+  --table-grid: #3a5045;
+  --table-head: #263a30;
+  --table-head-border: #577565;
+  --table-fg: #e8eee8;
+  --table-note: #494126;
+  --table-note-fg: #e5c46e;
   --shadow: 0 2px 6px rgba(0,0,0,.24), 0 10px 24px rgba(0,0,0,.18);
 }
 * { box-sizing: border-box; }
@@ -77,7 +94,7 @@ body {
 .spacer { flex: 1; }
 .cellar-link {
   padding-left: 14px;
-  color: var(--accent-warm);
+  color: rgba(245,239,226,.55);
   border-left: 1px solid rgba(201,169,97,.3);
   font: 600 11px var(--sans);
   letter-spacing: 1.2px;
@@ -85,7 +102,7 @@ body {
   text-transform: uppercase;
   white-space: nowrap;
 }
-.cellar-link[aria-current="page"] { color: rgba(245,239,226,.55); }
+.cellar-link[aria-current="page"] { color: var(--accent-warm); }
 .theme-toggle {
   width: 36px;
   height: 36px;
@@ -112,7 +129,7 @@ body {
   margin-top: 4px;
 }
 .varietal-column { display: flex; flex-direction: column; gap: 6px; }
-.varietal-group, .construction-card {
+.varietal-group {
   background: var(--bg-panel);
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -120,23 +137,195 @@ body {
 }
 .varietal-group { min-height: 132px; padding: 12px; }
 .varietal-group h2 {
-  margin: 0;
+  margin: 0 0 8px;
   font: 600 18px var(--serif-head);
 }
-.construction-card {
-  min-height: 100%;
-  display: grid;
-  place-content: center;
-  padding: 40px 24px;
+.varietal-list { display: flex; flex-direction: column; gap: 5px; }
+.varietal-line { display: flex; align-items: center; gap: 6px; }
+.varietal-line.align-center { justify-content: center; }
+.varietal-line.align-between { justify-content: space-between; }
+.varietal-line.align-start { justify-content: flex-start; }
+.varietal-line.align-end { justify-content: flex-end; }
+.varietal-line.align-split-right-center { position: relative; justify-content: center; }
+.varietal-line.align-split-right-center .vchip.split-right { position: absolute; right: 0; }
+.varietal-line.align-split-left-center { position: relative; justify-content: center; }
+.varietal-line.align-split-left-center .vchip.split-left { position: absolute; left: 0; }
+.varietal-line .vchip.split-right,
+.varietal-line .vchip.split-left { top: 50%; transform: translateY(-50%); }
+.vchip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  color: var(--fg);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font: 500 12px var(--sans);
+  cursor: pointer;
+  user-select: none;
+  transition: background .12s, border-color .12s, color .12s, transform .12s;
+}
+.vchip:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+.vchip.active { background: var(--accent); color: #FFF; border-color: var(--accent); }
+.vchip.type-white.active,
+.vchip.type-sparkling.active { background: var(--accent-warm); color: #1F1815; border-color: var(--accent-warm); }
+.vchip.type-fruit.active,
+.vchip.type-mead.active { background: var(--accent-cool); color: #FFF; border-color: var(--accent-cool); }
+.vchip.split-right { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.vchip.split-left { border-top-left-radius: 0; border-bottom-left-radius: 0; }
+.vchip .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 1px solid rgba(0, 0, 0, .15);
+}
+.vchip.type-red .dot { background: var(--accent); }
+.vchip.type-white .dot { background: var(--accent-warm); }
+.vchip.type-sparkling .dot { background: #F2E7B6; }
+.vchip.type-fruit .dot { background: var(--accent-cool); }
+.vchip.type-mead .dot { background: #C9962E; }
+
+/* === Shelf detail === */
+.shelf-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.shelf-detail {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.shelf-detail-header {
+  padding: 8px 16px;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(201,169,97,.08), transparent);
+}
+.shelf-detail-header .varietal-name {
+  color: var(--fg);
+  font: 600 24px var(--serif-head);
+  line-height: 1.1;
+}
+.shelf-detail-header .pill {
+  padding: 3px 10px;
+  background: var(--bg);
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+.shelf-detail-header .header-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  color: var(--fg-muted);
+  font: 12px var(--sans);
+}
+.shelf-detail-header .header-stats .stat strong { color: var(--accent); font-family: var(--mono); }
+.shelf-detail-header .origin {
+  margin-left: auto;
+  color: var(--fg-muted);
+  font: 12px var(--sans);
+}
+.shelf-pending {
+  padding: 48px 24px;
+  color: var(--fg-muted);
+  font-style: italic;
   text-align: center;
 }
-.construction-icon { font-size: 42px; }
-.construction-card h1 {
-  margin: 8px 0 4px;
-  color: var(--accent);
-  font: 600 32px var(--serif-head);
+
+/* === Shelf table === */
+.shelf-table-wrap {
+  padding: 12px 24px;
+  overflow-x: auto;
+  display: flex;
+  justify-content: center;
 }
-.construction-card p { margin: 0; color: var(--fg-muted); }
+.shelf-table {
+  display: inline-grid;
+  flex: 0 0 max-content;
+  background: var(--table-bg);
+  border: 2.5px solid var(--table-border);
+  zoom: var(--shelf-table-scale, 1);
+}
+.shelf-table .cell {
+  display: flex;
+  align-items: center;
+  height: 26px;
+  padding: 4px 8px;
+  border: 1px solid var(--table-grid);
+  overflow: hidden;
+  color: var(--table-fg);
+  font: 13px var(--sans);
+  line-height: 1.2;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-break: keep-all;
+}
+.shelf-table .cell.header {
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  height: auto;
+  padding: 4px 4px 6px;
+  background: var(--table-head);
+  border-bottom: 1.5px solid var(--table-head-border);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .3px;
+  text-align: center;
+}
+.shelf-table .cell.header .col-num-top {
+  color: var(--table-border);
+  font: 700 13px var(--mono);
+  line-height: 1;
+}
+.shelf-table .cell.header .bottle-icons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1px;
+  line-height: 0;
+}
+.shelf-table .bottle-icon {
+  width: 11px;
+  height: 22px;
+  display: inline-block;
+  color: var(--accent);
+  vertical-align: middle;
+}
+.shelf-table .cell.brand {
+  justify-content: center;
+  background: var(--table-bg);
+  color: var(--table-fg);
+  font-weight: 400;
+  text-align: center;
+}
+.shelf-table .cell.brand.note { background: var(--table-note); font-style: italic; }
+.shelf-table .cell.brand.note::after { content: " ★"; color: var(--table-note-fg); font-size: 10px; }
+
+/* === Notes callout === */
+.note-callout {
+  margin: 8px 24px 16px;
+  padding: 10px 14px;
+  background: rgba(201,169,97,.12);
+  border-left: 3px solid var(--accent-warm);
+  border-radius: 0 4px 4px 0;
+  color: var(--fg-muted);
+  font: italic 14px var(--serif);
+}
+.note-callout strong { color: var(--fg); font-style: normal; }
+
 .footer {
   display: flex;
   justify-content: space-between;
@@ -156,7 +345,8 @@ body {
   .cellar-link { padding-left: 8px; font-size: 10px; }
   .container { padding: 16px; }
   .cellar-layout { grid-template-columns: minmax(0, 1fr); }
-  .construction-card { min-height: 260px; }
+  .shelf-detail-header { flex-wrap: wrap; }
+  .shelf-detail-header .varietal-name { font-size: 22px; }
   .footer { flex-direction: column; }
 }
 </style>
@@ -166,26 +356,32 @@ body {
   <div class="logo">🍷 Cellar Keeper Helper</div>
   <span class="subtitle">— unofficial companion</span>
   <div class="spacer"></div>
-  <a class="cellar-link" href="index.html">Cellar 1</a>
-  <a class="cellar-link" href="cellar-2.html" aria-current="page">Cellar 2</a>
+  <a class="cellar-link" href="index.html">Cellar 1 · 2 448 bottles</a>
+  <a class="cellar-link" href="cellar-2.html" aria-current="page">Cellar 2 · 4 424 bottles</a>
   <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark theme" title="Switch to dark theme">🌙</button>
 </header>
 <main class="container">
   <div class="cellar-layout">
     <aside class="varietal-column" aria-label="Cellar 2 left side">
-      <section class="varietal-group"><h2>Floor 1</h2></section>
-      <section class="varietal-group"><h2>Floor 2</h2></section>
+      <section class="varietal-group">
+        <h2>Floor 1</h2>
+        <div class="varietal-list" id="left-floor1"></div>
+      </section>
+      <section class="varietal-group">
+        <h2>Floor 2</h2>
+        <div class="varietal-list" id="left-floor2"></div>
+      </section>
     </aside>
-    <section class="construction-card" aria-labelledby="construction-title">
-      <div>
-        <div class="construction-icon" aria-hidden="true">🛠️</div>
-        <h1 id="construction-title">Under construction</h1>
-        <p>Cellar 2 details will be added when they are available.</p>
-      </div>
-    </section>
+    <main id="shelf-detail"></main>
     <aside class="varietal-column" aria-label="Cellar 2 right side">
-      <section class="varietal-group"><h2>Floor 1</h2></section>
-      <section class="varietal-group"><h2>Floor 2</h2></section>
+      <section class="varietal-group">
+        <h2>Floor 1</h2>
+        <div class="varietal-list" id="right-floor1"></div>
+      </section>
+      <section class="varietal-group">
+        <h2>Floor 2</h2>
+        <div class="varietal-list" id="right-floor2"></div>
+      </section>
     </aside>
   </div>
 </main>
@@ -194,8 +390,340 @@ body {
   <a href="index.html">← Back to Cellar 1</a>
 </footer>
 <script type="module">
+import { CELLAR_DATA_2 } from './cellar-keeper-data-2.js';
 import { initializeThemeToggle } from './theme.js';
 initializeThemeToggle();
+
+// Physical chip arrangement transcribed from the user's scheme.
+// Each row has an alignment: center / between / start / end.
+// "split-right-center" = centred chip + a half-chip pinned to the right edge.
+// "split-left-center" = a half-chip pinned to the left edge + a centred chip.
+// Names standardised to match Cellar 1.
+const CHIP_LAYOUT = {
+  "left-floor1": [
+    { align: "center", chips: ["Pinot Noir"] },
+    { align: "between", chips: ["Carménère", "Chardonnay"] },
+    { align: "between", chips: ["Pinot Meunier", "Touriga Nacional"] },
+    { align: "between", chips: ["Sauvignon Blanc", "Gamay"] },
+    { align: "between", chips: ["Malbec", "Nebbiolo"] },
+    { align: "between", chips: ["Pomegranate", "Cabernet Franc"] },
+    { align: "start", chips: ["Pinot Grigio"] },
+    { align: "start", chips: ["Grenache", "Muscat"] }
+  ],
+  "left-floor2": [
+    { align: "split-right-center", chips: ["Vermentino", "Grüner Veltliner"] },
+    { align: "start", chips: ["Chenin Blanc"] },
+    { align: "start", chips: ["Gewürztraminer"] },
+    { align: "start", chips: ["Tannat"] },
+    { align: "start", chips: ["Petit Verdot"] },
+    { align: "start", chips: ["Riesling"] },
+    { align: "start", chips: ["Blackberry"] },
+    { align: "start", chips: ["Mead"] }
+  ],
+  "right-floor1": [
+    { align: "center", chips: ["Primitivo"] },
+    { align: "between", chips: ["Merlot", "Pinotage"] },
+    { align: "between", chips: ["Boğazkere", "Cabernet Sauvignon"] },
+    { align: "between", chips: ["Mourvèdre", "Shiraz"] },
+    { align: "between", chips: ["Barbera", "Öküzgözü"] },
+    { align: "between", chips: ["Zinfandel", "Strawberry"] },
+    { align: "end", chips: ["Sémillon"] },
+    { align: "end", chips: ["Palomino", "Glera"] }
+  ],
+  "right-floor2": [
+    { align: "split-left-center", chips: ["Grüner Veltliner", "Trebbiano"] },
+    { align: "end", chips: ["Cherry"] },
+    { align: "end", chips: ["Albariño"] },
+    { align: "end", chips: ["Viognier"] },
+    { align: "end", chips: ["Aglianico"] },
+    { align: "end", chips: ["Sangiovese"] },
+    { align: "end", chips: ["Blueberry"] },
+    { align: "end", chips: ["Tempranillo"] }
+  ]
+};
+
+// Physical neighbours, confirmed with the user:
+//   - the shelf directly above and directly below in the same column of the panel;
+//   - if a shelf sits on the top/bottom edge (no shelf above or below), fall back to
+//     the shelf beside it in the same row;
+//   - plus the single cross-panel touch (Muscat ↔ Palomino).
+// Order in each list = the order the cards are shown (above/left first, then below/right).
+const NEIGHBOURS = {
+  // Left panel · Floor 1
+  "Pinot Noir": ["Carménère", "Chardonnay"],
+  "Carménère": ["Pinot Noir", "Pinot Meunier"],
+  "Chardonnay": ["Pinot Noir", "Touriga Nacional"],
+  "Pinot Meunier": ["Carménère", "Sauvignon Blanc"],
+  "Touriga Nacional": ["Chardonnay", "Gamay"],
+  "Sauvignon Blanc": ["Pinot Meunier", "Malbec"],
+  "Gamay": ["Touriga Nacional", "Nebbiolo"],
+  "Malbec": ["Sauvignon Blanc", "Pomegranate"],
+  "Nebbiolo": ["Gamay", "Cabernet Franc"],
+  "Pomegranate": ["Malbec", "Pinot Grigio"],
+  "Cabernet Franc": ["Nebbiolo"],
+  "Pinot Grigio": ["Pomegranate", "Grenache"],
+  "Grenache": ["Pinot Grigio", "Muscat"],
+  "Muscat": ["Grenache", "Palomino"],
+
+  // Right panel · Floor 1
+  "Primitivo": ["Merlot", "Pinotage"],
+  "Merlot": ["Primitivo", "Boğazkere"],
+  "Pinotage": ["Primitivo", "Cabernet Sauvignon"],
+  "Boğazkere": ["Merlot", "Mourvèdre"],
+  "Cabernet Sauvignon": ["Pinotage", "Shiraz"],
+  "Mourvèdre": ["Boğazkere", "Barbera"],
+  "Shiraz": ["Cabernet Sauvignon", "Öküzgözü"],
+  "Barbera": ["Mourvèdre", "Zinfandel"],
+  "Öküzgözü": ["Shiraz", "Strawberry"],
+  "Zinfandel": ["Barbera"],
+  "Strawberry": ["Öküzgözü", "Sémillon"],
+  "Sémillon": ["Strawberry", "Glera"],
+  "Palomino": ["Glera", "Muscat"],
+  "Glera": ["Sémillon", "Palomino"],
+
+  // Left panel · Floor 2
+  "Vermentino": ["Chenin Blanc", "Grüner Veltliner"],
+  "Chenin Blanc": ["Vermentino", "Gewürztraminer"],
+  "Gewürztraminer": ["Chenin Blanc", "Tannat"],
+  "Tannat": ["Gewürztraminer", "Petit Verdot"],
+  "Petit Verdot": ["Tannat", "Riesling"],
+  "Riesling": ["Petit Verdot", "Blackberry"],
+  "Blackberry": ["Riesling", "Mead"],
+  "Mead": ["Blackberry"],
+
+  // Right panel · Floor 2 (Grüner Veltliner bridges the two panels at the top)
+  "Grüner Veltliner": ["Vermentino", "Trebbiano"],
+  "Trebbiano": ["Grüner Veltliner", "Cherry"],
+  "Cherry": ["Trebbiano", "Albariño"],
+  "Albariño": ["Cherry", "Viognier"],
+  "Viognier": ["Albariño", "Aglianico"],
+  "Aglianico": ["Viognier", "Sangiovese"],
+  "Sangiovese": ["Aglianico", "Blueberry"],
+  "Blueberry": ["Sangiovese", "Tempranillo"],
+  "Tempranillo": ["Blueberry"]
+};
+
+// Derive VARIETAL_META, DATA_LAYOUT, BRANDS from the canonical CELLAR_DATA_2.
+// Only varietals whose physical layout is known expose DATA_LAYOUT/BRANDS.
+const VARIETAL_META = {};
+const DATA_LAYOUT = {};
+const BRANDS = {};
+for (const v of CELLAR_DATA_2.varietals) {
+  VARIETAL_META[v.varietal] = { type: v.type, origin: v.origin, color: v.color_tag };
+  if (!v.pisos || !v.columns_spec) continue;
+  DATA_LAYOUT[v.varietal] = { pisos: v.pisos, columns: v.columns_spec };
+  const byCount = {};
+  for (const col of v.columns) {
+    const n = col.bottles_per_brand;
+    (byCount[n] ||= []).push(...col.brands);
+  }
+  for (const n in byCount) {
+    const seen = new Set();
+    byCount[n] = byCount[n].filter(b => {
+      const key = b.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+  }
+  BRANDS[v.varietal] = byCount;
+}
+
+function makeChip(name, extraClass) {
+  const meta = VARIETAL_META[name] || { type: "red", origin: "" };
+  const chip = document.createElement("span");
+
+  chip.className = `vchip type-${meta.type}${extraClass ? " " + extraClass : ""}`;
+  chip.dataset.varietal = name;
+  chip.innerHTML = `<span class="dot"></span>${name}`;
+  chip.title = meta.origin;
+  chip.addEventListener('click', () => selectVarietal(name));
+
+  return chip;
+}
+
+function buildLayout(rows, containerId) {
+  const container = document.getElementById(containerId);
+
+  rows.forEach(row => {
+    const line = document.createElement("div");
+    line.className = `varietal-line align-${row.align}`;
+
+    row.chips.forEach((name, i) => {
+      let extra = "";
+      if (row.align === "split-right-center" && i === 1) extra = "split-right";
+      if (row.align === "split-left-center" && i === 0) extra = "split-left";
+      line.appendChild(makeChip(name, extra));
+    });
+
+    container.appendChild(line);
+  });
+}
+
+// === Render shelf detail ===
+const BOTTLE_SVG = '<svg class="bottle-icon" viewBox="0 0 380.722 380.721" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M206.836,94.524c0-17.132,0-94.524,0-94.524h-12.723h-7.534h-12.717c0,0,0,77.392,0,94.524s-32.207,37.929-32.207,62.346 c0,24.411,0,201.009,0,207.236c0,6.229,4.166,16.615,13.501,16.615c6.355,0,22.012,0,31.435,0c4.45,0,7.534,0,7.534,0 c9.423,0,25.073,0,31.429,0c9.342,0,13.513-10.387,13.513-16.615c0-6.228,0-182.826,0-207.236 C239.066,132.453,206.836,111.667,206.836,94.524z M180.979,122.281c-2.085,2.847-4.415,6.437-6.947,10.579 c-2.562,4.153-4.99,8.993-7.459,14.244c-0.941,2.684-1.906,5.496-2.713,8.313c-0.029,2.986-0.976,5.188-0.563,8.935 c0.25,6.948,0.523,14.256,0.801,21.82c0.5,15.133,0.593,31.284,0.721,47.422c-0.035,32.287-1.011,64.588-2.521,88.801 c-0.662,12.107-1.748,22.191-2.26,29.256c-0.627,7.064-1.15,11.107-1.15,11.107s-0.528-4.043-1.156-11.107 c-0.511-7.064-1.598-17.148-2.26-29.256c-1.51-24.213-2.487-56.514-2.521-88.801c0.116-16.139,0.209-32.289,0.72-47.422 c0.279-7.563,0.552-14.872,0.802-21.82c-0.122-3.224,1.092-7.604,1.784-11.09c1.342-3.282,2.829-6.327,4.247-9.196 c1.726-2.638,3.358-5.165,4.926-7.564c1.784-2.19,3.474-4.258,5.054-6.222c3.288-3.788,6.21-6.989,8.761-9.487 c5.042-5.042,8.278-7.517,8.278-7.517S184.999,116.5,180.979,122.281z"/></svg>';
+
+const COL_WIDTH = { 3: 160, 5: 200, 6: 220, 9: 220 };
+const ABBREV_LEN = 3;
+const MIN_SHARED_PREFIX_LEN = 4;
+const MIN_WORD_LEN_TO_ABBREV = 6;
+
+function longestCommonPrefix(a, b) {
+  let i = 0;
+  while (i < a.length && i < b.length && a[i] === b[i]) i++;
+  return a.slice(0, i);
+}
+
+function headerHtml(name, meta, statsHtml = '') {
+  return `
+    <div class="shelf-detail-header">
+      <span class="varietal-name">${name}</span>
+      <span class="pill" style="background: ${meta.color}; color: ${meta.type === 'white' || meta.type === 'sparkling' ? '#1F1815' : '#FFF'};">${meta.type}</span>
+      ${statsHtml ? `<span class="header-stats">${statsHtml}</span>` : ''}
+      <span class="origin">${meta.origin}</span>
+    </div>`;
+}
+
+function shelfCardHtml(name) {
+  const meta = VARIETAL_META[name] || { type: "red", origin: "", color: "var(--accent)" };
+  const layout = DATA_LAYOUT[name];
+
+  // Layout not transcribed yet (e.g. Floor 2) — show a placeholder.
+  if (!layout) {
+    return `
+      <div class="shelf-detail">
+        ${headerHtml(name, meta)}
+        <div class="shelf-pending">Shelf layout for this varietal has not been added yet.</div>
+      </div>`;
+  }
+
+  const brandData = BRANDS[name];
+
+  // Distribute brands into columns following the layout spec:
+  // for each column in `layout.columns`, take `pisos` brands of the matching bottle count.
+  const byCount = {};
+  for (const [countStr, brands] of Object.entries(brandData)) byCount[countStr] = [...brands];
+  const columns = [];
+  const consumed = {};
+  for (const bottleCount of layout.columns) {
+    const key = String(bottleCount);
+    const start = consumed[key] || 0;
+    const end = start + layout.pisos;
+    columns.push({ bottles_per_brand: bottleCount, brands: (byCount[key] || []).slice(start, end) });
+    consumed[key] = end;
+  }
+
+  const totalBottles = columns.reduce((sum, c) => sum + c.bottles_per_brand * c.brands.length, 0);
+  const totalBrands = columns.reduce((sum, c) => sum + c.brands.length, 0);
+
+  const noteHtml = (name === "Glera")
+    ? `<div class="note-callout"><strong>★ Author's note:</strong> In-game this wine is labelled "Glera - Glera" but the bottle itself says "Novafizz". The guide (and this helper) use <em>Novafizz</em>.</div>`
+    : '';
+
+  const gridCols = columns.map(c => `${COL_WIDTH[c.bottles_per_brand] || 200}px`).join(' ');
+  let tableHtml = `<div class="shelf-table" style="grid-template-columns: ${gridCols};">`;
+
+  const colSpans = columns.map((_, idx) => ({ start: idx + 1, end: idx + 2 }));
+
+  columns.forEach((col, idx) => {
+    const span = colSpans[idx];
+    const numLabel = `<div class="col-num-top">${col.bottles_per_brand}</div>`;
+    const bottlesHtml = Array.from({ length: col.bottles_per_brand }, () => BOTTLE_SVG).join('');
+    tableHtml += `<div class="cell header" style="grid-column: ${span.start} / ${span.end}; grid-row: 1;" title="Col ${idx + 1} · ${col.bottles_per_brand} bottles per brand">${numLabel}<div class="bottle-icons">${bottlesHtml}</div></div>`;
+  });
+
+  // Abbreviate shared first words / long shared prefixes within a column (tooltip keeps full name).
+  const displayLabels = columns.map(col => {
+    const byFirstWord = {};
+    col.brands.forEach(b => {
+      const firstWord = b.split(/\s+/)[0];
+      (byFirstWord[firstWord] ||= []).push(b);
+    });
+    return col.brands.map(b => {
+      const firstWord = b.split(/\s+/)[0];
+      const sameWord = byFirstWord[firstWord];
+      if (sameWord.length > 1 && firstWord.length >= MIN_WORD_LEN_TO_ABBREV) {
+        const rest = b.slice(firstWord.length).trim();
+        const abbr = firstWord.slice(0, ABBREV_LEN) + '.';
+        return rest ? `${abbr} ${rest}` : abbr;
+      }
+      const hasPrefixSibling = col.brands.some(other => other !== b && longestCommonPrefix(b, other).length >= MIN_SHARED_PREFIX_LEN);
+      if (hasPrefixSibling && firstWord.length >= MIN_WORD_LEN_TO_ABBREV) {
+        const rest = b.slice(firstWord.length).trim();
+        const abbr = firstWord.slice(0, ABBREV_LEN) + '.';
+        return rest ? `${abbr} ${rest}` : abbr;
+      }
+      return b;
+    });
+  });
+
+  for (let piso = 0; piso < layout.pisos; piso++) {
+    const rowIdx = piso + 2;
+    columns.forEach((col, idx) => {
+      const brand = col.brands[piso] || '—';
+      const label = displayLabels[idx][piso] || brand;
+      const noteClass = (name === "Glera" && brand === "Novafizz") ? " note" : "";
+      const span = colSpans[idx];
+      tableHtml += `<div class="cell brand${noteClass}" style="grid-column: ${span.start} / ${span.end}; grid-row: ${rowIdx};" title="Piso ${piso + 1} · ${brand} · ${col.bottles_per_brand} bottles">${label}</div>`;
+    });
+  }
+  tableHtml += '</div>';
+
+  const statsHtml = `
+    <span class="stat"><strong>${layout.pisos}</strong> pisos</span>
+    <span class="stat"><strong>${columns.length}</strong> cols · ${layout.columns.join(' / ')}</span>
+    <span class="stat"><strong>${totalBrands}</strong> brands</span>
+    <span class="stat"><strong>${totalBottles}</strong> bottles</span>`;
+
+  return `
+    <div class="shelf-detail">
+      ${headerHtml(name, meta, statsHtml)}
+      ${noteHtml}
+      <div class="shelf-table-wrap">${tableHtml}</div>
+    </div>`;
+}
+
+function selectVarietal(name) {
+  document.querySelectorAll('.vchip').forEach(c => c.classList.remove('active'));
+  document.querySelector(`.vchip[data-varietal="${name}"]`)?.classList.add('active');
+
+  const cards = [shelfCardHtml(name)];
+  for (const neighbour of (NEIGHBOURS[name] || [])) {
+    if (DATA_LAYOUT[neighbour]) cards.push(shelfCardHtml(neighbour));
+  }
+
+  document.getElementById('shelf-detail').innerHTML =
+    `<div class="shelf-stack">${cards.join('')}</div>`;
+
+  history.replaceState(null, '', '#' + encodeURIComponent(name));
+  requestAnimationFrame(updateShelfTableScale);
+}
+
+function updateShelfTableScale() {
+  document.querySelectorAll('.shelf-table-wrap').forEach(wrap => {
+    const table = wrap.querySelector('.shelf-table');
+    if (!table) return;
+
+    wrap.style.setProperty('--shelf-table-scale', '1');
+    const styles = getComputedStyle(wrap);
+    const availableWidth = wrap.clientWidth - parseFloat(styles.paddingLeft) - parseFloat(styles.paddingRight);
+    const tableWidth = table.getBoundingClientRect().width;
+    if (availableWidth > 0 && tableWidth > 0) {
+      wrap.style.setProperty('--shelf-table-scale', String(Math.min(1, availableWidth / tableWidth)));
+    }
+  });
+}
+
+buildLayout(CHIP_LAYOUT["left-floor1"], "left-floor1");
+buildLayout(CHIP_LAYOUT["left-floor2"], "left-floor2");
+buildLayout(CHIP_LAYOUT["right-floor1"], "right-floor1");
+buildLayout(CHIP_LAYOUT["right-floor2"], "right-floor2");
+
+const hash = decodeURIComponent(window.location.hash.slice(1));
+const initial = (hash && VARIETAL_META[hash]) ? hash : "Pinot Noir";
+selectVarietal(initial);
+
+window.addEventListener('resize', () => requestAnimationFrame(updateShelfTableScale));
 </script>
 </body>
 </html>
