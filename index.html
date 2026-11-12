@@ -426,7 +426,7 @@ body {
 
 <div class="container">
   <div class="cellar-layout">
-    <aside class="varietal-column" aria-label="Varietales del lado izquierdo">
+    <aside class="varietal-column" aria-label="Cellar 1 left side">
       <div class="varietal-group">
         <h2>Floor 1</h2>
         <div class="varietal-list" id="left-floor1"></div>
@@ -439,7 +439,7 @@ body {
 
     <main id="shelf-detail"></main>
 
-    <aside class="varietal-column" aria-label="Varietales del lado derecho">
+    <aside class="varietal-column" aria-label="Cellar 1 right side">
       <div class="varietal-group">
         <h2>Floor 1</h2>
         <div class="varietal-list" id="right-floor1"></div>
@@ -590,7 +590,7 @@ function shelfCardHtml(name) {
   const brandData = BRANDS[name];
 
   // Distribute brands into columns following the layout spec
-  // For each column in `layout.columns`, take `pisos` brands of the matching bottle count
+  // For each column in `layout.columns`, take the next shelf rows for that bottle count.
   const byCount = {};
   for (const [countStr, brands] of Object.entries(brandData)) {
     byCount[countStr] = [...brands]; // copy
@@ -618,7 +618,7 @@ function shelfCardHtml(name) {
 
   // Build shelf table as a CSS grid.
   // Each "cell" is a div positioned in the grid via grid-column / grid-row.
-  // No piso number column (removed per user request).
+  // No shelf-level number column (removed per user request).
   // Each cellar-shelf column has a fixed width in pixels — NOT strictly proportional
   // to bottle count, since 9-bottle columns would be too wide. Instead:
   //   - 3-bottle columns get 160px (wide enough for "Mediterranean Pearl")
@@ -627,13 +627,13 @@ function shelfCardHtml(name) {
   //   - 9-bottle columns get 220px (capped — the bottle icons in the header convey the count)
   const COL_WIDTH = { 3: 160, 5: 200, 6: 220, 9: 220 };
 
-  // Build grid-template-columns: one entry per cellar-shelf column (no piso column)
+  // Build grid-template-columns: one entry per cellar-shelf column (no row-number column)
   const gridCols = columns.map(c => `${COL_WIDTH[c.bottles_per_brand] || 200}px`).join(' ');
 
   let tableHtml = `<div class="shelf-table" style="grid-template-columns: ${gridCols};">`;
 
   // Helper to compute grid-column placement for a cellar-shelf column index
-  // (returns "start / end" track notation). No piso column now, so columns start at 1.
+  // (returns "start / end" track notation). No row-number column now, so columns start at 1.
   let cumulativeSlot = 1;
   const colSpans = columns.map(c => {
     const start = cumulativeSlot;
@@ -645,7 +645,7 @@ function shelfCardHtml(name) {
   // Inline SVG for the wine bottle (from upload/wine-bottle-svgrepo-com.svg, stripped)
   const BOTTLE_SVG = '<svg class="bottle-icon" viewBox="0 0 380.722 380.721" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M206.836,94.524c0-17.132,0-94.524,0-94.524h-12.723h-7.534h-12.717c0,0,0,77.392,0,94.524s-32.207,37.929-32.207,62.346 c0,24.411,0,201.009,0,207.236c0,6.229,4.166,16.615,13.501,16.615c6.355,0,22.012,0,31.435,0c4.45,0,7.534,0,7.534,0 c9.423,0,25.073,0,31.429,0c9.342,0,13.513-10.387,13.513-16.615c0-6.228,0-182.826,0-207.236 C239.066,132.453,206.836,111.667,206.836,94.524z M180.979,122.281c-2.085,2.847-4.415,6.437-6.947,10.579 c-2.562,4.153-4.99,8.993-7.459,14.244c-0.941,2.684-1.906,5.496-2.713,8.313c-0.029,2.986-0.976,5.188-0.563,8.935 c0.25,6.948,0.523,14.256,0.801,21.82c0.5,15.133,0.593,31.284,0.721,47.422c-0.035,32.287-1.011,64.588-2.521,88.801 c-0.662,12.107-1.748,22.191-2.26,29.256c-0.627,7.064-1.15,11.107-1.15,11.107s-0.528-4.043-1.156-11.107 c-0.511-7.064-1.598-17.148-2.26-29.256c-1.51-24.213-2.487-56.514-2.521-88.801c0.116-16.139,0.209-32.289,0.72-47.422 c0.279-7.563,0.552-14.872,0.802-21.82c-0.122-3.224,1.092-7.604,1.784-11.09c1.342-3.282,2.829-6.327,4.247-9.196 c1.726-2.638,3.358-5.165,4.926-7.564c1.784-2.19,3.474-4.258,5.054-6.222c3.288-3.788,6.21-6.989,8.761-9.487 c5.042-5.042,8.278-7.517,8.278-7.517S184.999,116.5,180.979,122.281z"/></svg>';
 
-  // Header row: bottle icons row + number row, no "Piso" cell
+  // Header row: bottle icons row + number row, no level-number cell
   columns.forEach((col, idx) => {
     const span = colSpans[idx];
     // Number centered above the bottles
@@ -707,17 +707,17 @@ function shelfCardHtml(name) {
     });
   });
 
-  // Body rows: 5 pisos (no piso number column), one brand per cellar-shelf column
-  for (let piso = 0; piso < layout.pisos; piso++) {
-    const rowIdx = piso + 2; // row 1 is header, body starts at row 2
+  // Body rows: one row per shelf level, with no level-number column.
+  for (let rowIndex = 0; rowIndex < layout.pisos; rowIndex++) {
+    const rowIdx = rowIndex + 2; // row 1 is header, body starts at row 2
     // One brand cell per cellar-shelf column, spanning N grid columns
     columns.forEach((col, idx) => {
-      const brand = col.brands[piso] || '—';
-      const label = displayLabels[idx][piso] || brand;
+      const brand = col.brands[rowIndex] || '—';
+      const label = displayLabels[idx][rowIndex] || brand;
       const isNote = (name === "Glera" && brand === "Novafizz");
       const noteClass = isNote ? " note" : "";
       const span = colSpans[idx];
-      tableHtml += `<div class="cell brand${noteClass}" style="grid-column: ${span.start} / ${span.end}; grid-row: ${rowIdx};" title="Piso ${piso + 1} · ${brand} · ${col.bottles_per_brand} bottles">${label}</div>`;
+      tableHtml += `<div class="cell brand${noteClass}" style="grid-column: ${span.start} / ${span.end}; grid-row: ${rowIdx};" title="Level ${rowIndex + 1} · ${brand} · ${col.bottles_per_brand} bottles">${label}</div>`;
     });
   }
 
@@ -730,7 +730,7 @@ function shelfCardHtml(name) {
         <span class="varietal-name">${name}</span>
         <span class="pill" style="background: ${meta.color}; color: ${meta.type === 'white' || meta.type === 'sparkling' ? '#1F1815' : '#FFF'};">${meta.type}</span>
         <span class="header-stats">
-          <span class="stat"><strong>${layout.pisos}</strong> pisos</span>
+          <span class="stat"><strong>${layout.pisos}</strong> levels</span>
           <span class="stat"><strong>${columns.length}</strong> cols · ${layout.columns.join(' / ')}</span>
           <span class="stat"><strong>${totalBrands}</strong> brands</span>
           <span class="stat"><strong>${totalBottles}</strong> bottles</span>

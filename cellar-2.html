@@ -605,7 +605,7 @@ function shelfCardHtml(name) {
   const brandData = BRANDS[name];
 
   // Distribute brands into columns following the layout spec:
-  // for each column in `layout.columns`, take `pisos` brands of the matching bottle count.
+  // For each column in `layout.columns`, take the next shelf rows for that bottle count.
   const byCount = {};
   for (const [countStr, brands] of Object.entries(brandData)) byCount[countStr] = [...brands];
   const columns = [];
@@ -662,20 +662,20 @@ function shelfCardHtml(name) {
     });
   });
 
-  for (let piso = 0; piso < layout.pisos; piso++) {
-    const rowIdx = piso + 2;
+  for (let rowIndex = 0; rowIndex < layout.pisos; rowIndex++) {
+    const rowIdx = rowIndex + 2;
     columns.forEach((col, idx) => {
-      const brand = col.brands[piso] || '—';
-      const label = displayLabels[idx][piso] || brand;
+      const brand = col.brands[rowIndex] || '—';
+      const label = displayLabels[idx][rowIndex] || brand;
       const noteClass = (name === "Glera" && brand === "Novafizz") ? " note" : "";
       const span = colSpans[idx];
-      tableHtml += `<div class="cell brand${noteClass}" style="grid-column: ${span.start} / ${span.end}; grid-row: ${rowIdx};" title="Piso ${piso + 1} · ${brand} · ${col.bottles_per_brand} bottles">${label}</div>`;
+      tableHtml += `<div class="cell brand${noteClass}" style="grid-column: ${span.start} / ${span.end}; grid-row: ${rowIdx};" title="Level ${rowIndex + 1} · ${brand} · ${col.bottles_per_brand} bottles">${label}</div>`;
     });
   }
   tableHtml += '</div>';
 
   const statsHtml = `
-    <span class="stat"><strong>${layout.pisos}</strong> pisos</span>
+    <span class="stat"><strong>${layout.pisos}</strong> levels</span>
     <span class="stat"><strong>${columns.length}</strong> cols · ${layout.columns.join(' / ')}</span>
     <span class="stat"><strong>${totalBrands}</strong> brands</span>
     <span class="stat"><strong>${totalBottles}</strong> bottles</span>`;

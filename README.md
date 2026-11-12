@@ -53,7 +53,7 @@ You can bookmark a specific varietal: `index.html#Pomegranate` loads with *Pomeg
 | --- | --- | --- |
 | Total bottles | **2,448** | **4,424** |
 | Varietal sections | **30** (18 Floor 1 + 12 Floor 2) | **45** |
-| Pisos (rows) per shelf | 4 or 5 | 4 or 5 |
+| Rows per shelf | 4 or 5 | 4 or 5 |
 | Bottles per column | 3, 5, 6 or 9 | 3, 5, 6 or 9 |
 
 Cellar 1 also has **43 unique brands** across **468 brand×varietal entries**.
@@ -62,7 +62,7 @@ Cellar 1 also has **43 unique brands** across **468 brand×varietal entries**.
 
 Each varietal has its own column layout measured directly from the in-game shelf. Shelves are not numbered in the game; examples:
 
-| Varietal | Floor | Pisos | Columns |
+| Varietal | Floor | Rows | Columns |
 | --- | --- | --- | --- |
 | Sémillon | 1 | 5 | 3 / 9 / 3 / 5 |
 | Pinot Grigio | 1 | 4 | 3 / 9 / 5 / 9 / 5 |
@@ -134,76 +134,3 @@ GitHub Pages publishes the `main` branch from the repository root. After pushing
 ## ⚠️ Disclaimer
 
 Unofficial fan-made project. **Not affiliated with EgoTrampoline or Valve.** *Cellar Keeper* and all related assets belong to their respective owners. The Steam guides and all credit for the underlying data go to SteffRenn and kaorukamiya1980.
-
----
-
-# 🇪🇸 Versión en español
-
-**cellar-keeper-web-helper** — Asistente web no oficial para *Cellar Keeper* (EgoTrampoline).
-
-La aplicación permite elegir un varietal y ver la disposición de las botellas por planta, columna y piso. El juego no numera las estanterías, así que no se muestran códigos de estantería. Cellar 1 y Cellar 2 incluyen sus estanterías completas.
-
-- 🌙 **Tema claro/oscuro**, compartido entre ambas páginas y guardado en el navegador.
-- 🍷 **Cellar 2 completo**, con sus 45 varietales y enlace de vuelta a Cellar 1.
-- 🧭 **Estanterías vecinas**, que se muestran junto a la seleccionada para colocar botellas sin cambiar de página.
-
-### Cómo usarlo
-
-#### 🌐 En línea (recomendado, una vez desplegado)
-
-Abre la [**aplicación en línea**](https://the-silent-pulse.com/cellar-keeper-web-helper/).
-
-Sin registros ni instalación: funciona en el navegador.
-
-#### 💾 En local
-
-```bash
-git clone https://github.com/Raftxo/cellar-keeper-web-helper.git
-cd cellar-keeper-web-helper
-# Servir vía HTTP local (necesario para los módulos ES)
-python3 -m http.server 8000
-# luego visita http://localhost:8000
-```
-
-Puedes marcar un varietal concreto: `index.html#Pomegranate` abre la app con *Pomegranate* ya seleccionado.
-
-### Datos
-
-* **Cellar 1**: 30 secciones de varietales (18 en planta 1 + 12 en planta 2) y **2 448 botellas** en total
-* **Cellar 2**: 45 varietales y **4 424 botellas** en total
-* Cada estantería tiene 4 o 5 pisos, y columnas de 3, 5, 6 o 9 botellas por marca
-* Las estanterías no están numeradas en el juego y no se muestran códigos
-
-### Nombres y ortografía
-
-La guía es la referencia para el listado de vinos y varietales. Para facilitar las búsquedas, aquí se añaden diacríticos en algunos nombres y se muestran de forma uniforme unos pocos nombres de marcas. Son criterios de presentación: la guía sigue siendo la fuente del listado y se mantiene intacta la disposición de las estanterías.
-
-| En la guía | Nombre mostrado | Nota |
-| --- | --- | --- |
-| `Semillon` | `Sémillon` | Ortografía francesa habitual |
-| `Carmenere` | `Carménère` | Ortografía francesa/chilena habitual |
-| `Okuzgozu` | `Öküzgözü` | Ortografía turca habitual |
-| `Bogazkere` | `Boğazkere` | Ortografía turca habitual |
-| `Pino Grigio` | `Pinot Grigio` | Usa el nombre del varietal en toda la aplicación |
-| `Kestral Ridge` / `Kestrel` | `Kestrel Ridge` | Forma completa y consistente de la marca |
-| `Mediterranean` | `Mediterranean Pearl` | Forma completa de la marca |
-| `Verdant` | `Verdant Drop` | Forma completa de la marca |
-
-La guía incluye el varietal Glera; el asistente añade una nota informativa indicando que la botella del juego lleva la etiqueta **Novafizz**.
-
-### Despliegue en GitHub Pages
-
-GitHub Pages publica automáticamente la rama `main` desde la raíz del repositorio. Al subir cambios, la web se actualiza en:
-
-[**the-silent-pulse.com/cellar-keeper-web-helper**](https://the-silent-pulse.com/cellar-keeper-web-helper/)
-
-### Créditos
-
-* **Fuentes de datos** — [Guía de Steam de SteffRenn](https://steamcommunity.com/sharedfiles/filedetails/?id=3779159708) (Cellar 1) y [guía de kaorukamiya1980](https://steamcommunity.com/sharedfiles/filedetails/?id=3821795288) (Cellar 2).
-* **Disposición física de estanterías** — medidas directamente del juego.
-* **Icono SVG de botella** — [SVG Repo](https://www.svgrepo.com/svg/326735/wine-bottle) (uso comercial libre).
-* **Estructura del proyecto** — inspirada en [Raftxo/arcane-library-web-helper](https://github.com/Raftxo/arcane-library-web-helper) (MIT).
-
-### Aviso
-
-Proyecto de fans no oficial. **Sin afiliación con EgoTrampoline ni con Valve.** *Cellar Keeper* y todos sus recursos pertenecen a sus respectivos dueños. Las guías originales y todo el mérito de los datos subyacentes son de SteffRenn y kaorukamiya1980.
