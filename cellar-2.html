@@ -142,16 +142,15 @@ body {
 }
 .varietal-list { display: flex; flex-direction: column; gap: 5px; }
 .varietal-line { display: flex; align-items: center; gap: 6px; }
+.varietal-separator { width: 100%; margin: 3px 0; border: 0; border-top: 1px solid var(--border); }
 .varietal-line.align-center { justify-content: center; }
 .varietal-line.align-between { justify-content: space-between; }
 .varietal-line.align-start { justify-content: flex-start; }
 .varietal-line.align-end { justify-content: flex-end; }
-.varietal-line.align-split-right-center { position: relative; justify-content: center; }
-.varietal-line.align-split-right-center .vchip.split-right { position: absolute; right: 0; }
-.varietal-line.align-split-left-center { position: relative; justify-content: center; }
-.varietal-line.align-split-left-center .vchip.split-left { position: absolute; left: 0; }
-.varietal-line .vchip.split-right,
-.varietal-line .vchip.split-left { top: 50%; transform: translateY(-50%); }
+.varietal-line.align-split-right-pair { justify-content: flex-end; gap: 0; }
+.varietal-line.align-split-left-pair { justify-content: flex-start; gap: 0; }
+.varietal-line.align-split-right-pair .vchip,
+.varietal-line.align-split-left-pair .vchip { padding-left: 6px; padding-right: 6px; }
 .vchip {
   display: flex;
   align-items: center;
@@ -367,6 +366,7 @@ body {
         <h2>Floor 1</h2>
         <div class="varietal-list" id="left-floor1"></div>
       </section>
+      
       <section class="varietal-group">
         <h2>Floor 2</h2>
         <div class="varietal-list" id="left-floor2"></div>
@@ -396,14 +396,14 @@ initializeThemeToggle();
 
 // Physical chip arrangement transcribed from the user's scheme.
 // Each row has an alignment: center / between / start / end.
-// "split-right-center" = centred chip + a half-chip pinned to the right edge.
-// "split-left-center" = a half-chip pinned to the left edge + a centred chip.
+// "split-right-pair" = chips joined at the right edge, with the last chip continuing right.
+// "split-left-pair" = chips joined at the left edge, with the first chip continuing left.
 // Names standardised to match Cellar 1.
 const CHIP_LAYOUT = {
   "left-floor1": [
     { align: "center", chips: ["Pinot Noir"] },
     { align: "between", chips: ["Carménère", "Chardonnay"] },
-    { align: "between", chips: ["Pinot Meunier", "Touriga Nacional"] },
+    { align: "between", chips: ["Pinot Meunier", "Touriga Nacional"], separatorAfter: true },
     { align: "between", chips: ["Sauvignon Blanc", "Gamay"] },
     { align: "between", chips: ["Malbec", "Nebbiolo"] },
     { align: "between", chips: ["Pomegranate", "Cabernet Franc"] },
@@ -411,7 +411,7 @@ const CHIP_LAYOUT = {
     { align: "start", chips: ["Grenache", "Muscat"] }
   ],
   "left-floor2": [
-    { align: "split-right-center", chips: ["Vermentino", "Grüner Veltliner"] },
+    { align: "split-right-pair", chips: ["Vermentino", "Grüner Veltliner"] },
     { align: "start", chips: ["Chenin Blanc"] },
     { align: "start", chips: ["Gewürztraminer"] },
     { align: "start", chips: ["Tannat"] },
@@ -423,7 +423,7 @@ const CHIP_LAYOUT = {
   "right-floor1": [
     { align: "center", chips: ["Primitivo"] },
     { align: "between", chips: ["Merlot", "Pinotage"] },
-    { align: "between", chips: ["Boğazkere", "Cabernet Sauvignon"] },
+    { align: "between", chips: ["Boğazkere", "Cabernet Sauvignon"], separatorAfter: true },
     { align: "between", chips: ["Mourvèdre", "Shiraz"] },
     { align: "between", chips: ["Barbera", "Öküzgözü"] },
     { align: "between", chips: ["Zinfandel", "Strawberry"] },
@@ -431,7 +431,7 @@ const CHIP_LAYOUT = {
     { align: "end", chips: ["Palomino", "Glera"] }
   ],
   "right-floor2": [
-    { align: "split-left-center", chips: ["Grüner Veltliner", "Trebbiano"] },
+    { align: "split-left-pair", chips: ["Grüner Veltliner", "Trebbiano"] },
     { align: "end", chips: ["Cherry"] },
     { align: "end", chips: ["Albariño"] },
     { align: "end", chips: ["Viognier"] },
@@ -551,12 +551,17 @@ function buildLayout(rows, containerId) {
 
     row.chips.forEach((name, i) => {
       let extra = "";
-      if (row.align === "split-right-center" && i === 1) extra = "split-right";
-      if (row.align === "split-left-center" && i === 0) extra = "split-left";
+      if (row.align === "split-right-pair" && i === 1) extra = "split-right";
+      if (row.align === "split-left-pair" && i === 0) extra = "split-left";
       line.appendChild(makeChip(name, extra));
     });
 
     container.appendChild(line);
+    if (row.separatorAfter) {
+      const separator = document.createElement("hr");
+      separator.className = "varietal-separator";
+      container.appendChild(separator);
+    }
   });
 }
 
