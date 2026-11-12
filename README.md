@@ -6,7 +6,7 @@
 
 A lightweight, **dependency-free** static site that shows you **where every bottle belongs** in both cellars — floor, column position, and brand. It does not show shelf numbers because the in-game shelves are not numbered.
 
-Based on the Cellar 1 information in [SteffRenn's Steam guide](https://steamcommunity.com/sharedfiles/filedetails/?id=3779159708) and the Cellar 2 information in [kaorukamiya1980's Steam guide](https://steamcommunity.com/sharedfiles/filedetails/?id=3821795288). The guides are credited as the source; names and spellings are presented consistently here to make them easier to find.
+Based on the Cellar 1 information in [SteffRenn's Steam guide](https://steamcommunity.com/sharedfiles/filedetails/?id=3779159708) and the Cellar 2 information in [the Cellar 2 Steam Community guide](https://steamcommunity.com/sharedfiles/filedetails/?id=3821795288). The guides are credited as the source; names and spellings are presented consistently here to make them easier to find.
 
 ---
 
@@ -18,6 +18,7 @@ Based on the Cellar 1 information in [SteffRenn's Steam guide](https://steamcomm
 - 🏢 **Varietals grouped by floor** — Cellar 1: 18 on Floor 1 + 12 on Floor 2; Cellar 2: 45 unique varietals across both floors.
 - 🌙 **Light/dark theme** — switch from the header; the preference is shared by both cellar pages and persisted in localStorage.
 - 🍷 **Cellar 2 shelf layouts** — full chip layout and shelf tables for all 45 Cellar 2 varietals.
+- 🗺️ **Cellar 2 floor maps** — hover the map icon beside a floor label to preview its layout.
 - 🧭 **Neighbouring shelf cards** — selecting a varietal also shows the shelf directly above/below it (or beside it at the edges), so you can place bottles without switching pages.
 - 🔗 **Bookmarkable URLs** — `index.html#Sémillon`, `index.html#Pinot%20Grigio`, `index.html#Pomegranate` load the varietal directly.
 - 📱 **Mobile-friendly** — collapses to a single column on small screens.
@@ -124,10 +125,16 @@ GitHub Pages publishes the `main` branch from the repository root. After pushing
 
 ## 🙏 Credits
 
-- **Data sources** — [SteffRenn's *Cellar Keeper Cellar 1 Alphabetical Shelf-by-Shelf Guide*](https://steamcommunity.com/sharedfiles/filedetails/?id=3779159708) and [kaorukamiya1980's Cellar 2 guide](https://steamcommunity.com/sharedfiles/filedetails/?id=3821795288) on Steam Community.
+- **Data sources** — Cellar 1: [SteffRenn's *Cellar Keeper Cellar 1 Alphabetical Shelf-by-Shelf Guide*](https://steamcommunity.com/sharedfiles/filedetails/?id=3779159708); Cellar 2: [Cellar 2 Steam Community guide](https://steamcommunity.com/sharedfiles/filedetails/?id=3821795288).
 - **Physical shelf layout** — measured directly from the in-game shelves.
 - **Bottle SVG icon** — [wine-bottle by SVG Repo](https://www.svgrepo.com/svg/326735/wine-bottle) (free for commercial use).
 - **Project structure inspiration** — [Raftxo/arcane-library-web-helper](https://github.com/Raftxo/arcane-library-web-helper) (MIT) — a similar companion for *Librarian: Tidy Up the Arcane Library!*
+
+---
+
+## 🧭 To Do
+
+- Add Cellar 1 maps.
 
 ---
 

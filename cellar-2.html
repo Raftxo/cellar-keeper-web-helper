@@ -72,7 +72,7 @@ body {
 .header {
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 100;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -88,7 +88,6 @@ body {
   color: var(--accent-warm);
   font: 700 22px var(--serif-head);
   letter-spacing: .5px;
-  white-space: nowrap;
 }
 .subtitle { color: rgba(245,239,226,.6); font-style: italic; font-size: 14px; }
 .spacer { flex: 1; }
@@ -96,7 +95,8 @@ body {
   padding-left: 14px;
   color: rgba(245,239,226,.55);
   border-left: 1px solid rgba(201,169,97,.3);
-  font: 600 11px var(--sans);
+  font-family: var(--sans);
+  font-size: 11px;
   letter-spacing: 1.2px;
   text-decoration: none;
   text-transform: uppercase;
@@ -116,7 +116,7 @@ body {
   cursor: pointer;
 }
 .theme-toggle:hover { background: rgba(201,169,97,.15); }
-.theme-toggle:focus-visible, a:focus-visible { outline: 2px solid var(--accent-warm); outline-offset: 3px; }
+.theme-toggle:focus-visible, .header a:focus-visible { outline: 2px solid var(--accent-warm); outline-offset: 3px; }
 .container {
   width: 100%;
   flex: 1;
@@ -139,6 +139,40 @@ body {
 .varietal-group h2 {
   margin: 0 0 8px;
   font: 600 18px var(--serif-head);
+}
+.floor-map-trigger {
+  margin-left: 8px;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  font: 20px/1 var(--sans);
+  vertical-align: 1px;
+  cursor: zoom-in;
+}
+.floor-map-trigger:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.floor-map-open { overflow: hidden; }
+.floor-map-dialog {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  background: #000;
+}
+.floor-map-dialog::backdrop { background: #000; }
+.floor-map-dialog img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  cursor: zoom-out;
 }
 .varietal-list { display: flex; flex-direction: column; gap: 5px; }
 .varietal-line { display: flex; align-items: center; gap: 6px; }
@@ -352,7 +386,14 @@ body {
 </head>
 <body>
 <header class="header">
-  <div class="logo">🍷 Cellar Keeper Helper</div>
+  <div class="logo">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <path d="M9 2h6v3l-1 1v3l3 3v9a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-9l3-3V6L9 5V2z"
+            fill="currentColor" opacity=".9"/>
+      <rect x="10" y="13" width="4" height="2" fill="rgba(0,0,0,.2)"/>
+    </svg>
+    Cellar Keeper Helper
+  </div>
   <span class="subtitle">— unofficial companion</span>
   <div class="spacer"></div>
   <a class="cellar-link" href="index.html">Cellar 1 · 2 448 bottles</a>
@@ -363,23 +404,23 @@ body {
   <div class="cellar-layout">
     <aside class="varietal-column" aria-label="Cellar 2 left side">
       <section class="varietal-group">
-        <h2>Floor 1</h2>
+        <h2>Floor 1<button class="floor-map-trigger" type="button" data-floor="Floor 1" data-map-src="cellar2-floor1-map.jpg" aria-label="Show Floor 1 map" title="Preview Floor 1 map" aria-haspopup="dialog" aria-controls="floor-map-dialog">🗺️</button></h2>
         <div class="varietal-list" id="left-floor1"></div>
       </section>
       
       <section class="varietal-group">
-        <h2>Floor 2</h2>
+        <h2>Floor 2<button class="floor-map-trigger" type="button" data-floor="Floor 2" data-map-src="cellar2-floor2-map.jpg" aria-label="Show Floor 2 map" title="Preview Floor 2 map" aria-haspopup="dialog" aria-controls="floor-map-dialog">🗺️</button></h2>
         <div class="varietal-list" id="left-floor2"></div>
       </section>
     </aside>
     <main id="shelf-detail"></main>
     <aside class="varietal-column" aria-label="Cellar 2 right side">
       <section class="varietal-group">
-        <h2>Floor 1</h2>
+        <h2>Floor 1<button class="floor-map-trigger" type="button" data-floor="Floor 1" data-map-src="cellar2-floor1-map.jpg" aria-label="Show Floor 1 map" title="Preview Floor 1 map" aria-haspopup="dialog" aria-controls="floor-map-dialog">🗺️</button></h2>
         <div class="varietal-list" id="right-floor1"></div>
       </section>
       <section class="varietal-group">
-        <h2>Floor 2</h2>
+        <h2>Floor 2<button class="floor-map-trigger" type="button" data-floor="Floor 2" data-map-src="cellar2-floor2-map.jpg" aria-label="Show Floor 2 map" title="Preview Floor 2 map" aria-haspopup="dialog" aria-controls="floor-map-dialog">🗺️</button></h2>
         <div class="varietal-list" id="right-floor2"></div>
       </section>
     </aside>
@@ -389,10 +430,85 @@ body {
   <span>Static · offline · unofficial fan project</span>
   <a href="index.html">← Back to Cellar 1</a>
 </footer>
+<dialog id="floor-map-dialog" class="floor-map-dialog" aria-label="Cellar 2 floor map">
+  <img alt="" role="button" tabindex="0">
+</dialog>
 <script type="module">
 import { CELLAR_DATA_2 } from './cellar-keeper-data-2.js';
 import { initializeThemeToggle } from './theme.js';
 initializeThemeToggle();
+
+const floorMapDialog = document.getElementById("floor-map-dialog");
+const floorMapImage = floorMapDialog.querySelector("img");
+let activeMapTrigger = null;
+let suppressedMapTrigger = null;
+
+document.addEventListener("pointermove", event => {
+  if (suppressedMapTrigger) {
+    const rect = suppressedMapTrigger.getBoundingClientRect();
+    if (event.clientX < rect.left || event.clientX > rect.right ||
+        event.clientY < rect.top || event.clientY > rect.bottom) {
+      suppressedMapTrigger = null;
+    }
+  }
+});
+
+document.querySelectorAll(".floor-map-trigger[data-map-src]").forEach(trigger => {
+  const showMap = () => {
+    if (floorMapDialog.open || suppressedMapTrigger === trigger) return;
+    activeMapTrigger = trigger;
+    const floor = trigger.dataset.floor;
+    floorMapImage.src = trigger.dataset.mapSrc;
+    floorMapImage.alt = `Cellar 2 ${floor} map. Click to close.`;
+    floorMapImage.setAttribute("aria-label", `Close Cellar 2 ${floor} map`);
+    floorMapDialog.showModal();
+    document.body.classList.add("floor-map-open");
+  };
+
+  trigger.addEventListener("mouseenter", showMap);
+  trigger.addEventListener("click", showMap);
+  trigger.addEventListener("keydown", event => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      showMap();
+    }
+  });
+});
+
+const closeMap = () => {
+  activeMapTrigger = null;
+  if (floorMapDialog.open) floorMapDialog.close();
+  document.body.classList.remove("floor-map-open");
+};
+
+const closeMapFromEvent = event => {
+  const trigger = activeMapTrigger;
+  if (trigger && Number.isFinite(event.clientX) && Number.isFinite(event.clientY)) {
+    const rect = trigger.getBoundingClientRect();
+    if (event.clientX >= rect.left && event.clientX <= rect.right &&
+        event.clientY >= rect.top && event.clientY <= rect.bottom) {
+      suppressedMapTrigger = trigger;
+    }
+  }
+  closeMap();
+};
+
+floorMapDialog.addEventListener("close", () => document.body.classList.remove("floor-map-open"));
+floorMapDialog.addEventListener("cancel", event => {
+  event.preventDefault();
+  closeMapFromEvent(event);
+});
+
+floorMapDialog.addEventListener("click", event => {
+  if (event.target === floorMapDialog) closeMapFromEvent(event);
+});
+floorMapImage.addEventListener("click", closeMapFromEvent);
+floorMapImage.addEventListener("keydown", event => {
+  if (event.key === "Enter" || event.key === " " || event.key === "Escape") {
+    event.preventDefault();
+    closeMapFromEvent(event);
+  }
+});
 
 // Physical chip arrangement transcribed from the user's scheme.
 // Each row has an alignment: center / between / start / end.
