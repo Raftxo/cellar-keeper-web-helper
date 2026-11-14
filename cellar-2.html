@@ -69,7 +69,7 @@ body {
   background-position: 0 0, 12px 12px;
   font: 17px/1.55 var(--serif);
 }
-.header {
+header.header {
   position: sticky;
   top: 0;
   z-index: 100;
@@ -116,7 +116,66 @@ body {
   cursor: pointer;
 }
 .theme-toggle:hover { background: rgba(201,169,97,.15); }
-.theme-toggle:focus-visible, .header a:focus-visible { outline: 2px solid var(--accent-warm); outline-offset: 3px; }
+.theme-toggle:focus-visible, header.header a:focus-visible, .layout-settings-toggle:focus-visible { outline: 2px solid var(--accent-warm); outline-offset: 3px; }
+.layout-settings { position: relative; }
+.layout-settings-toggle {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  color: var(--accent-warm);
+  border: 1px solid rgba(201,169,97,.55);
+  border-radius: 50%;
+  font: 18px/1 var(--sans);
+  cursor: pointer;
+  list-style: none;
+}
+.layout-settings-toggle::-webkit-details-marker { display: none; }
+.layout-settings-toggle:hover,
+.layout-settings[open] .layout-settings-toggle { background: rgba(201,169,97,.15); }
+.layout-settings-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 101;
+  width: 240px;
+  padding: 12px;
+  color: var(--fg);
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  font: 12px var(--sans);
+}
+.layout-settings-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.layout-settings-group + .layout-settings-group {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.layout-settings-buttons { display: flex; gap: 4px; }
+.layout-settings-buttons button {
+  width: 32px;
+  height: 30px;
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  font: 18px/1 var(--sans);
+  cursor: pointer;
+}
+.layout-settings-buttons button:hover { border-color: var(--accent); color: var(--accent); }
+.layout-settings-buttons button[aria-pressed="true"] {
+  color: #FFF;
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.layout-settings-buttons button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .container {
   width: 100%;
   flex: 1;
@@ -373,7 +432,7 @@ body {
 .footer a { color: var(--accent-warm); text-decoration: none; }
 .footer a:hover { text-decoration: underline; }
 @media (max-width: 768px) {
-  .header { gap: 10px; padding: 10px 14px; }
+  header.header { gap: 10px; padding: 10px 14px; }
   .subtitle { display: none; }
   .cellar-link { padding-left: 8px; font-size: 10px; }
   .container { padding: 16px; }
@@ -398,28 +457,45 @@ body {
   <div class="spacer"></div>
   <a class="cellar-link" href="index.html">Cellar 1 · 2 448 bottles</a>
   <a class="cellar-link" href="cellar-2.html" aria-current="page">Cellar 2 · 4 424 bottles</a>
+  <details class="layout-settings">
+    <summary class="layout-settings-toggle" title="Chip layout settings" aria-label="Chip layout settings">⚙</summary>
+    <div class="layout-settings-panel" role="group" aria-label="Chip layout settings">
+      <div class="layout-settings-group" role="group" aria-label="Floor order">
+        <span>Floor order</span>
+        <div class="layout-settings-buttons">
+          <button type="button" data-layout-floor-order-toggle aria-label="Toggle floor order. Current: Floor 1 above Floor 2." title="Switch to Floor 2 above Floor 1" aria-pressed="false">↕</button>
+        </div>
+      </div>
+      <div class="layout-settings-group" role="group" aria-label="Side placement">
+        <span>Side placement</span>
+        <div class="layout-settings-buttons">
+          <button type="button" data-layout-sides-toggle aria-label="Toggle side placement. Currently Pinot Noir and Vermentino are on the left." title="Move Pinot Noir and Vermentino to the right" aria-pressed="false">↔</button>
+        </div>
+      </div>
+    </div>
+  </details>
   <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark theme" title="Switch to dark theme">🌙</button>
 </header>
 <main class="container">
-  <div class="cellar-layout">
+  <div class="cellar-layout" data-floor-order="floor1-first" data-sides="left-first">
     <aside class="varietal-column" aria-label="Cellar 2 left side">
-      <section class="varietal-group">
+      <section class="varietal-group" data-floor="floor1">
         <h2>Floor 1<button class="floor-map-trigger" type="button" data-floor="Floor 1" data-map-src="cellar2-floor1-map.jpg" aria-label="Show Floor 1 map" title="Preview Floor 1 map" aria-haspopup="dialog" aria-controls="floor-map-dialog">🗺️</button></h2>
         <div class="varietal-list" id="left-floor1"></div>
       </section>
       
-      <section class="varietal-group">
+      <section class="varietal-group" data-floor="floor2">
         <h2>Floor 2<button class="floor-map-trigger" type="button" data-floor="Floor 2" data-map-src="cellar2-floor2-map.jpg" aria-label="Show Floor 2 map" title="Preview Floor 2 map" aria-haspopup="dialog" aria-controls="floor-map-dialog">🗺️</button></h2>
         <div class="varietal-list" id="left-floor2"></div>
       </section>
     </aside>
     <main id="shelf-detail"></main>
     <aside class="varietal-column" aria-label="Cellar 2 right side">
-      <section class="varietal-group">
+      <section class="varietal-group" data-floor="floor1">
         <h2>Floor 1<button class="floor-map-trigger" type="button" data-floor="Floor 1" data-map-src="cellar2-floor1-map.jpg" aria-label="Show Floor 1 map" title="Preview Floor 1 map" aria-haspopup="dialog" aria-controls="floor-map-dialog">🗺️</button></h2>
         <div class="varietal-list" id="right-floor1"></div>
       </section>
-      <section class="varietal-group">
+      <section class="varietal-group" data-floor="floor2">
         <h2>Floor 2<button class="floor-map-trigger" type="button" data-floor="Floor 2" data-map-src="cellar2-floor2-map.jpg" aria-label="Show Floor 2 map" title="Preview Floor 2 map" aria-haspopup="dialog" aria-controls="floor-map-dialog">🗺️</button></h2>
         <div class="varietal-list" id="right-floor2"></div>
       </section>
@@ -438,24 +514,65 @@ import { CELLAR_DATA_2 } from './cellar-keeper-data-2.js';
 import { initializeThemeToggle } from './theme.js';
 initializeThemeToggle();
 
+const cellarLayout = document.querySelector(".cellar-layout");
+const layoutSettings = document.querySelector(".layout-settings");
+const chipColumns = [...cellarLayout.querySelectorAll(".varietal-column")];
+const shelfDetail = document.getElementById("shelf-detail");
+const floorGroups = chipColumns.map(column => ({
+  floor1: column.querySelector('[data-floor="floor1"]'),
+  floor2: column.querySelector('[data-floor="floor2"]')
+}));
+const layoutState = {
+  floorOrder: cellarLayout.dataset.floorOrder,
+  sides: cellarLayout.dataset.sides
+};
+
+const updateChipLayout = () => {
+  cellarLayout.dataset.floorOrder = layoutState.floorOrder;
+  cellarLayout.dataset.sides = layoutState.sides;
+  floorGroups.forEach((floors, index) => {
+    const column = chipColumns[index];
+    column.replaceChildren(...(layoutState.floorOrder === "floor1-first"
+      ? [floors.floor1, floors.floor2]
+      : [floors.floor2, floors.floor1]));
+  });
+  const [leftColumn, rightColumn] = layoutState.sides === "left-first"
+    ? chipColumns
+    : [...chipColumns].reverse();
+  cellarLayout.replaceChildren(leftColumn, shelfDetail, rightColumn);
+  leftColumn.setAttribute("aria-label", "Cellar 2 left side");
+  rightColumn.setAttribute("aria-label", "Cellar 2 right side");
+  const floorOrderReversed = layoutState.floorOrder === "floor2-first";
+  const floorOrderButton = layoutSettings.querySelector("[data-layout-floor-order-toggle]");
+  floorOrderButton.setAttribute("aria-pressed", String(floorOrderReversed));
+  floorOrderButton.setAttribute("aria-label", `Toggle floor order. Current: Floor ${floorOrderReversed ? "2 above Floor 1" : "1 above Floor 2"}.`);
+  floorOrderButton.title = `Switch to Floor ${floorOrderReversed ? "1 above Floor 2" : "2 above Floor 1"}`;
+
+  const sidesReversed = layoutState.sides === "right-first";
+  const sidesButton = layoutSettings.querySelector("[data-layout-sides-toggle]");
+  sidesButton.setAttribute("aria-pressed", String(sidesReversed));
+  sidesButton.setAttribute("aria-label", `Toggle side placement. Currently Pinot Noir and Vermentino are on the ${sidesReversed ? "right" : "left"}.`);
+  sidesButton.title = `Move Pinot Noir and Vermentino to the ${sidesReversed ? "left" : "right"}`;
+};
+
+layoutSettings.querySelector("[data-layout-floor-order-toggle]").addEventListener("click", () => {
+  layoutState.floorOrder = layoutState.floorOrder === "floor1-first" ? "floor2-first" : "floor1-first";
+  updateChipLayout();
+});
+layoutSettings.querySelector("[data-layout-sides-toggle]").addEventListener("click", () => {
+  layoutState.sides = layoutState.sides === "left-first" ? "right-first" : "left-first";
+  updateChipLayout();
+});
+
+updateChipLayout();
+
 const floorMapDialog = document.getElementById("floor-map-dialog");
 const floorMapImage = floorMapDialog.querySelector("img");
 let activeMapTrigger = null;
-let suppressedMapTrigger = null;
-
-document.addEventListener("pointermove", event => {
-  if (suppressedMapTrigger) {
-    const rect = suppressedMapTrigger.getBoundingClientRect();
-    if (event.clientX < rect.left || event.clientX > rect.right ||
-        event.clientY < rect.top || event.clientY > rect.bottom) {
-      suppressedMapTrigger = null;
-    }
-  }
-});
 
 document.querySelectorAll(".floor-map-trigger[data-map-src]").forEach(trigger => {
   const showMap = () => {
-    if (floorMapDialog.open || suppressedMapTrigger === trigger) return;
+    if (floorMapDialog.open) return;
     activeMapTrigger = trigger;
     const floor = trigger.dataset.floor;
     floorMapImage.src = trigger.dataset.mapSrc;
@@ -465,7 +582,6 @@ document.querySelectorAll(".floor-map-trigger[data-map-src]").forEach(trigger =>
     document.body.classList.add("floor-map-open");
   };
 
-  trigger.addEventListener("mouseenter", showMap);
   trigger.addEventListener("click", showMap);
   trigger.addEventListener("keydown", event => {
     if (event.key === "Enter" || event.key === " ") {
@@ -481,15 +597,7 @@ const closeMap = () => {
   document.body.classList.remove("floor-map-open");
 };
 
-const closeMapFromEvent = event => {
-  const trigger = activeMapTrigger;
-  if (trigger && Number.isFinite(event.clientX) && Number.isFinite(event.clientY)) {
-    const rect = trigger.getBoundingClientRect();
-    if (event.clientX >= rect.left && event.clientX <= rect.right &&
-        event.clientY >= rect.top && event.clientY <= rect.bottom) {
-      suppressedMapTrigger = trigger;
-    }
-  }
+const closeMapFromEvent = () => {
   closeMap();
 };
 

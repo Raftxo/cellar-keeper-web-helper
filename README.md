@@ -18,7 +18,8 @@ Based on the Cellar 1 information in [SteffRenn's Steam guide](https://steamcomm
 - 🏢 **Varietals grouped by floor** — Cellar 1: 18 on Floor 1 + 12 on Floor 2; Cellar 2: 45 unique varietals across both floors.
 - 🌙 **Light/dark theme** — switch from the header; the preference is shared by both cellar pages and persisted in localStorage.
 - 🍷 **Cellar 2 shelf layouts** — full chip layout and shelf tables for all 45 Cellar 2 varietals.
-- 🗺️ **Cellar 2 floor maps** — hover the map icon beside a floor label to preview its layout.
+- 🗺️ **Cellar 2 floor maps** — click the map icon beside a floor label to preview its layout.
+- ⚙️ **Cellar 2 chip layout settings** — reorder Floor 1 and Floor 2, or swap the left and right chip panels.
 - 🧭 **Neighbouring shelf cards** — selecting a varietal also shows the shelf directly above/below it (or beside it at the edges), so you can place bottles without switching pages.
 - 🔗 **Bookmarkable URLs** — `index.html#Sémillon`, `index.html#Pinot%20Grigio`, `index.html#Pomegranate` load the varietal directly.
 - 📱 **Mobile-friendly** — collapses to a single column on small screens.
